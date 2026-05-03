@@ -70,10 +70,10 @@ select:focus,input:focus{border-color:var(--acc)}
 .sbm{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-bottom:6px}
 .sb{height:5px;border-radius:3px;background:var(--border)}
 .sf{height:100%;border-radius:3px;transition:width .4s}
-.hrb{background:var(--red-bg);border:0.5px solid var(--red-b);border-radius:var(--r);padding:.75rem 1rem;margin-top:8px;display:none}
+.hrb{background:var(--pur-bg);border:0.5px solid var(--pur-b);border-radius:var(--r);padding:.75rem 1rem;margin-top:8px;display:none}
 .hrb.show{display:block}
-.hrt{font-size:12px;font-weight:600;color:var(--red);margin-bottom:3px}
-.hrm{font-size:12px;color:var(--red);line-height:1.5;opacity:.85}
+.hrt{font-size:12px;font-weight:600;color:var(--pur);margin-bottom:3px}
+.hrm{font-size:12px;color:var(--pur);line-height:1.5;opacity:.85}
 .pab{background:var(--yel-bg);border:0.5px solid var(--yel-b);border-radius:var(--r);padding:.75rem 1rem;margin-top:8px;display:none}
 .pab.show{display:block}
 .pat{font-size:12px;font-weight:600;color:var(--yel);margin-bottom:3px}
@@ -490,7 +490,7 @@ function sVR(R,ct,py,pt){
   [...R].sort((a,b)=>ord.indexOf(a.t)-ord.indexOf(b.t)).forEach((r,i)=>{
     const tag=r.tg==='n'?'<span class="rtag rtag-n">NCCI</span>':r.tg==='p'?'<span class="rtag rtag-p">PA required</span>':r.tg==='hr'?'<span class="rtag rtag-h">High risk</span>':'';
     const ic=r.t==='pass'?'+ ':(r.t==='fail'||r.t==='ncci')?'x ':'! ';
-    const canResolve=r.t==='pa'||r.t==='hr';
+    const canResolve=r.t==='pa'||r.t==='hr'||r.t==='warn';
     const checkHtml=canResolve?`<div class="rc-check"><input type="checkbox" id="rc-cb-${i}" onchange="resolveAlert(this,'rc-${i}')"><label for="rc-cb-${i}" style="color:${r.t==='hr'?'var(--pur)':'var(--yel)'}">Mark as verified and resolved</label></div>`:'';
     h+=`<div class="rc ${r.t}" id="rc-${i}"><div class="rtit">${ic}${r.ti}${tag}</div><div class="rmsg">${r.m}</div>${checkHtml}</div>`;
   });
