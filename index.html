@@ -6,7 +6,7 @@
 <title>Billing Proficiency Suite</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#F7F6F3;--surface:#FFF;--border:#E4E1D9;--bl:#EEECE8;--text:#1A1815;--t2:#6B6760;--t3:#A8A59F;--acc:#2D5BE3;--acc-bg:#EEF2FD;--acc-b:#C5D4F8;--grn:#1A7A4A;--grn-bg:#EBF7F1;--grn-b:#B8E4CC;--red:#C0392B;--red-bg:#FDECEA;--red-b:#F5C0BB;--yel:#8A6000;--yel-bg:#FDF7E3;--yel-b:#F0D98A;--r:8px;--rl:12px}
+:root{--bg:#F7F6F3;--surface:#FFF;--border:#E4E1D9;--bl:#EEECE8;--text:#1A1815;--t2:#6B6760;--t3:#A8A59F;--acc:#2D5BE3;--acc-bg:#EEF2FD;--acc-b:#C5D4F8;--grn:#1A7A4A;--grn-bg:#EBF7F1;--grn-b:#B8E4CC;--red:#C0392B;--red-bg:#FDECEA;--red-b:#F5C0BB;--yel:#8A6000;--yel-bg:#FDF7E3;--yel-b:#F0D98A;--pur:#5B2D8E;--pur-bg:#F3EEF9;--pur-b:#C9B3E8;--r:8px;--rl:12px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);min-height:100vh;font-family:'DM Sans',sans-serif;font-size:14px}
 .shell{max-width:740px;margin:0 auto;padding:2rem 1.25rem 5rem}
@@ -52,7 +52,15 @@ select:focus,input:focus{border-color:var(--acc)}
 .rtag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:4px;margin-left:6px;font-weight:600;vertical-align:middle;font-family:'DM Mono',monospace}
 .rtag-n{background:var(--red-bg);color:var(--red);border:0.5px solid var(--red-b)}
 .rtag-p{background:var(--yel-bg);color:var(--yel);border:0.5px solid var(--yel-b)}
-.rtag-h{background:var(--red-bg);color:var(--red);border:0.5px solid var(--red-b)}
+.rtag-h{background:var(--pur-bg);color:var(--pur);border:0.5px solid var(--pur-b)}
+.rc.hr{background:var(--pur-bg);border-color:var(--pur);border-left-width:4px}
+.rc.hr .rtit{color:var(--pur)}
+.rc.resolved{background:var(--grn-bg);border-color:var(--grn-b);opacity:.7}
+.rc.resolved .rtit{color:var(--grn);text-decoration:line-through}
+.rc.resolved .rmsg{display:none}
+.rc-check{display:flex;align-items:center;gap:8px;margin-top:.6rem;padding-top:.6rem;border-top:0.5px solid rgba(0,0,0,.07)}
+.rc-check input[type=checkbox]{width:14px;height:14px;flex-shrink:0;cursor:pointer}
+.rc-check label{font-size:11px;font-weight:500;cursor:pointer;line-height:1.4}
 .rtit{font-size:13px;font-weight:600;margin-bottom:3px}
 .rc.pass .rtit{color:var(--grn)}
 .rc.warn .rtit,.rc.pa .rtit{color:var(--yel)}
@@ -422,7 +430,7 @@ function vC(){
   if(!dL.length)R.push({t:'fail',ti:'No diagnosis codes entered',m:'At least one ICD-10 diagnosis is required to support medical necessity.'});
   if(npi==='no')R.push({t:'fail',ti:'NPI not on file',m:'A valid NPI is required for claim submission.'});
   if(net==='out')R.push({t:'warn',ti:'Out-of-network provider',m:'Out-of-network claims are at elevated denial risk. Verify the patient has OON benefits.'});
-  if(pt&&HR[pt])R.push({t:'fail',tg:'hr',ti:'High-risk plan: '+HR[pt].l,m:HR[pt].m});
+  if(pt&&HR[pt])R.push({t:'hr',tg:'hr',ti:'High-risk plan: '+HR[pt].l,m:HR[pt].m});
   NCCI.forEach(b=>{if(b.c.every(x=>cL.includes(x)))R.push({t:'ncci',tg:'n',ti:'NCCI conflict: '+b.c.join(' + '),m:b.m});});
   if(py&&ct&&PAR[py]&&PAR[py][ct])PAR[py][ct].forEach(r=>R.push({t:'pa',tg:'p',ti:'PA alert: '+py.toUpperCase(),m:r}));
   if(pt==='hmo')R.push({t:'pa',tg:'p',ti:'PA alert: HMO referral',m:'HMO plans require a valid PCP referral on file before services are rendered. Confirm referral number is attached to the claim.'});
@@ -472,19 +480,32 @@ function vC(){
 }
 function sVR(R,ct,py,pt){
   const f=R.filter(r=>r.t==='fail'||r.t==='ncci').length;
-  const w=R.filter(r=>r.t==='warn'||r.t==='pa').length;
+  const w=R.filter(r=>r.t==='warn'||r.t==='pa'||r.t==='hr').length;
   const p=R.filter(r=>r.t==='pass').length;
   const tot=f+w+p||1;
   const sc=Math.round((p/tot)*100);
   const fc=f?'var(--red)':w?'var(--yel)':'var(--grn)';
   let h=`<div class="sbw"><div class="sbm"><span>Approval readiness</span><span>${sc}%</span></div><div class="sb"><div class="sf" style="width:${sc}%;background:${fc}"></div></div></div>`;
-  const ord=['ncci','fail','pa','warn','pass'];
-  [...R].sort((a,b)=>ord.indexOf(a.t)-ord.indexOf(b.t)).forEach(r=>{
+  const ord=['ncci','fail','hr','pa','warn','pass'];
+  [...R].sort((a,b)=>ord.indexOf(a.t)-ord.indexOf(b.t)).forEach((r,i)=>{
     const tag=r.tg==='n'?'<span class="rtag rtag-n">NCCI</span>':r.tg==='p'?'<span class="rtag rtag-p">PA required</span>':r.tg==='hr'?'<span class="rtag rtag-h">High risk</span>':'';
     const ic=r.t==='pass'?'+ ':(r.t==='fail'||r.t==='ncci')?'x ':'! ';
-    h+=`<div class="rc ${r.t}"><div class="rtit">${ic}${r.ti}${tag}</div><div class="rmsg">${r.m}</div></div>`;
+    const canResolve=r.t==='pa'||r.t==='hr';
+    const checkHtml=canResolve?`<div class="rc-check"><input type="checkbox" id="rc-cb-${i}" onchange="resolveAlert(this,'rc-${i}')"><label for="rc-cb-${i}" style="color:${r.t==='hr'?'var(--pur)':'var(--yel)'}">Mark as verified and resolved</label></div>`:'';
+    h+=`<div class="rc ${r.t}" id="rc-${i}"><div class="rtit">${ic}${r.ti}${tag}</div><div class="rmsg">${r.m}</div>${checkHtml}</div>`;
   });
   document.getElementById('vr').innerHTML=h;
+}
+function resolveAlert(cb,cardId){
+  const card=document.getElementById(cardId);
+  if(cb.checked){
+    card.classList.add('resolved');
+    card.querySelector('.rc-check label').textContent='Verified and resolved';
+  } else {
+    card.classList.remove('resolved');
+    const isHr=card.classList.contains('hr');
+    card.querySelector('.rc-check label').textContent='Mark as verified and resolved';
+  }
 }
 
 function pick(q,a,e){
