@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Billing Proficiency Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F7F6F3;--surface:#FFF;--border:#E4E1D9;--bl:#EEECE8;--text:#1A1815;--t2:#6B6760;--t3:#A8A59F;--acc:#2D5BE3;--acc-bg:#EEF2FD;--acc-b:#C5D4F8;--grn:#1A7A4A;--grn-bg:#EBF7F1;--grn-b:#B8E4CC;--red:#C0392B;--red-bg:#FDECEA;--red-b:#F5C0BB;--yel:#8A6000;--yel-bg:#FDF7E3;--yel-b:#F0D98A;--r:8px;--rl:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);min-height:100vh;font-family:'DM Sans',sans-serif;font-size:14px}
+.shell{max-width:740px;margin:0 auto;padding:2rem 1.25rem 5rem}
+.hdr{margin-bottom:1.75rem;padding-bottom:1.25rem;border-bottom:0.5px solid var(--border)}
+.hdr h1{font-size:17px;font-weight:600;letter-spacing:-.02em}
+.hdr p{font-size:12px;color:var(--t3);margin-top:3px}
+.nav{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1.75rem}
+.ntab{padding:7px 14px;border-radius:var(--r);border:0.5px solid var(--border);background:var(--surface);color:var(--t2);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.ntab:hover{border-color:var(--t3);color:var(--text)}
+.ntab.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.pg{display:none}.pg.active{display:block}
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rl);padding:1.25rem;margin-bottom:.875rem}
+.sl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.75rem;font-family:'DM Mono',monospace}
+label{font-size:12px;color:var(--t2);display:block;margin-bottom:4px;font-weight:500}
+select,input[type=text]{width:100%;padding:7px 10px;border:0.5px solid var(--border);border-radius:var(--r);font-size:13px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border .15s}
+select:focus,input:focus{border-color:var(--acc)}
+.btn{padding:8px 18px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);font-size:13px;font-weight:500;cursor:pointer;color:var(--text);transition:all .15s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.btn:hover{background:var(--bg)}
+.btn-p{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn-p:hover{opacity:.85}
+.btn-s{padding:5px 12px;font-size:12px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.ibox{background:var(--acc-bg);border-radius:var(--r);padding:.875rem 1rem;margin-bottom:1rem;border:0.5px solid var(--acc-b)}
+.ilbl{font-size:10px;font-weight:600;color:var(--acc);letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px;font-family:'DM Mono',monospace}
+.itxt{font-size:13px;color:#1E3A9C;line-height:1.6}
+.wbox{background:var(--yel-bg);border:0.5px solid var(--yel-b);border-radius:var(--r);padding:.875rem 1rem;margin-bottom:1rem}
+.wlbl{font-size:10px;font-weight:600;color:var(--yel);letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px;font-family:'DM Mono',monospace}
+.wtxt{font-size:13px;color:var(--yel);line-height:1.6}
+.ctag{display:inline-flex;align-items:center;gap:5px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:3px 9px;font-size:12px;margin:3px 3px 0 0;font-family:'DM Mono',monospace}
+.ctag button{background:none;border:none;cursor:pointer;color:var(--t3);font-size:14px;line-height:1;padding:0}
+.ctag button:hover{color:var(--red)}
+.cir{display:flex;gap:8px;margin-bottom:6px}
+.cir input{flex:1}
+.abtn{padding:7px 13px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--bg);font-size:12px;cursor:pointer;color:var(--text);white-space:nowrap;font-family:'DM Sans',sans-serif}
+.abtn:hover{border-color:var(--t3)}
+.rc{border-radius:var(--r);padding:.875rem 1rem;margin-bottom:.5rem;border-left:3px solid transparent}
+.rc.pass{background:var(--grn-bg);border-color:var(--grn)}
+.rc.warn{background:var(--yel-bg);border-color:var(--yel)}
+.rc.fail{background:var(--red-bg);border-color:var(--red)}
+.rc.ncci{background:var(--red-bg);border-color:#7B1C12;border-left-width:4px}
+.rc.pa{background:var(--yel-bg);border-color:#6B4A00;border-left-width:4px}
+.rtag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:4px;margin-left:6px;font-weight:600;vertical-align:middle;font-family:'DM Mono',monospace}
+.rtag-n{background:var(--red-bg);color:var(--red);border:0.5px solid var(--red-b)}
+.rtag-p{background:var(--yel-bg);color:var(--yel);border:0.5px solid var(--yel-b)}
+.rtag-h{background:var(--red-bg);color:var(--red);border:0.5px solid var(--red-b)}
+.rtit{font-size:13px;font-weight:600;margin-bottom:3px}
+.rc.pass .rtit{color:var(--grn)}
+.rc.warn .rtit,.rc.pa .rtit{color:var(--yel)}
+.rc.fail .rtit,.rc.ncci .rtit{color:var(--red)}
+.rmsg{font-size:12px;color:var(--t2);line-height:1.6}
+.sbw{margin:1rem 0}
+.sbm{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-bottom:6px}
+.sb{height:5px;border-radius:3px;background:var(--border)}
+.sf{height:100%;border-radius:3px;transition:width .4s}
+.hrb{background:var(--red-bg);border:0.5px solid var(--red-b);border-radius:var(--r);padding:.75rem 1rem;margin-top:8px;display:none}
+.hrb.show{display:block}
+.hrt{font-size:12px;font-weight:600;color:var(--red);margin-bottom:3px}
+.hrm{font-size:12px;color:var(--red);line-height:1.5;opacity:.85}
+.pab{background:var(--yel-bg);border:0.5px solid var(--yel-b);border-radius:var(--r);padding:.75rem 1rem;margin-top:8px;display:none}
+.pab.show{display:block}
+.pat{font-size:12px;font-weight:600;color:var(--yel);margin-bottom:3px}
+.pam{font-size:12px;color:var(--yel);line-height:1.5}
+.th{display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem}
+.crow{display:flex;align-items:center;gap:10px;padding:.65rem 0;border-bottom:0.5px solid var(--bl)}
+.crow:last-child{border-bottom:none}
+.ci{flex:1}
+.ci .cl{font-size:13px;font-weight:500;color:var(--text)}
+.ci .ml{font-size:11px;color:var(--t3);margin-top:2px;font-family:'DM Mono',monospace}
+.bdg{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:500}
+.bdg.pass{background:var(--grn-bg);color:var(--grn)}
+.bdg.warn{background:var(--yel-bg);color:var(--yel)}
+.bdg.fail,.bdg.hr{background:var(--red-bg);color:var(--red)}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+.sb2{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rl);padding:.875rem;text-align:center}
+.sn{font-size:24px;font-weight:600;color:var(--text);font-family:'DM Mono',monospace}
+.slb{font-size:10px;color:var(--t3);margin-top:2px;font-family:'DM Mono',monospace}
+.gt{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.gtb{padding:6px 13px;border-radius:var(--r);border:0.5px solid var(--border);background:var(--surface);color:var(--t2);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.gtb.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.gs{display:none}.gs.active{display:block}
+.mc{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rl);padding:1.1rem 1.25rem;margin-bottom:.75rem}
+.mh{display:flex;align-items:flex-start;gap:12px;margin-bottom:.5rem}
+.mcd{font-size:20px;font-weight:600;color:var(--text);min-width:48px;font-family:'DM Mono',monospace}
+.mn{font-size:13px;font-weight:600;color:var(--text);line-height:1.4}
+.ms{font-size:12px;color:var(--t3);margin-top:2px}
+.mb{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:.75rem}
+.me{background:var(--bg);border-radius:var(--r);padding:.75rem 1rem;margin-bottom:.6rem}
+.mel{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;font-family:'DM Mono',monospace}
+.met{font-size:12px;color:var(--t2);line-height:1.6}
+.mp{display:flex;flex-wrap:wrap;gap:5px;margin-top:.5rem}
+.pill{font-size:11px;padding:3px 9px;border-radius:6px;font-weight:500}
+.pu{background:var(--grn-bg);color:var(--grn)}
+.pw{background:var(--yel-bg);color:var(--yel)}
+.pd{background:var(--red-bg);color:var(--red)}
+.pi{background:var(--acc-bg);color:var(--acc)}
+.dl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin:1.25rem 0 .75rem;padding-bottom:.4rem;border-bottom:0.5px solid var(--border);font-family:'DM Mono',monospace}
+.tc{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rl);padding:1.1rem 1.25rem;margin-bottom:.75rem}
+.tq{font-size:14px;font-weight:500;color:var(--text);margin-bottom:.75rem;line-height:1.5}
+.tos{display:flex;flex-direction:column;gap:7px}
+.to{display:flex;align-items:flex-start;gap:10px;padding:.6rem .875rem;border:0.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .15s;background:var(--surface)}
+.to:hover{border-color:var(--acc);background:var(--acc-bg)}
+.to.sel{border-color:var(--acc);background:var(--acc-bg)}
+.tol{font-size:13px;color:var(--text);line-height:1.5}
+.tr2{background:var(--grn-bg);border:0.5px solid var(--grn-b);border-radius:var(--r);padding:.875rem 1rem;margin-top:.75rem}
+.trt{font-size:13px;font-weight:600;color:var(--grn);margin-bottom:4px}
+.trb{font-size:12px;color:var(--grn);line-height:1.6;opacity:.9}
+.trn{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:.875rem 1rem;margin-top:.75rem;font-size:12px;color:var(--t2);line-height:1.6}
+.rst{font-size:12px;color:var(--t3);background:none;border:none;cursor:pointer;margin-top:.5rem;text-decoration:underline;font-family:'DM Sans',sans-serif}
+.gr{padding:.75rem 0;border-bottom:0.5px solid var(--bl);display:grid;grid-template-columns:110px 1fr;gap:12px}
+.gr:last-child{border-bottom:none}
+.gt2{font-size:13px;font-weight:600;color:var(--text)}
+.gd{font-size:13px;color:var(--t2);line-height:1.6}
+.qs{display:none}.qs.active{display:block}
+.pw2{margin-bottom:1.25rem}
+.pm{display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-bottom:6px;font-family:'DM Mono',monospace}
+.pb{height:3px;border-radius:2px;background:var(--border)}
+.pf{height:100%;border-radius:2px;background:var(--acc);transition:width .4s}
+.qn{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem;font-family:'DM Mono',monospace}
+.qsc{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:.875rem 1rem;margin-bottom:1rem;font-size:13px;color:var(--t2);line-height:1.7}
+.qt{font-size:15px;font-weight:500;color:var(--text);margin-bottom:1rem;line-height:1.5;letter-spacing:-.01em}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:.75rem 1rem;border:0.5px solid var(--border);border-radius:var(--r);margin-bottom:.5rem;cursor:pointer;transition:all .15s;background:var(--surface)}
+.opt:hover:not(.lk){border-color:var(--acc);background:var(--acc-bg)}
+.opt.correct{border-color:var(--grn-b);background:var(--grn-bg)}
+.opt.wrong{border-color:var(--red-b);background:var(--red-bg)}
+.opt.rvc{border-color:var(--grn-b);background:var(--grn-bg)}
+.ol{font-size:11px;font-weight:600;color:var(--t3);min-width:18px;margin-top:1px;font-family:'DM Mono',monospace}
+.opt.correct .ol,.opt.rvc .ol{color:var(--grn)}
+.opt.wrong .ol{color:var(--red)}
+.ot{font-size:13px;color:var(--text);line-height:1.5}
+.opt.correct .ot,.opt.rvc .ot{color:var(--grn)}
+.opt.wrong .ot{color:var(--red)}
+.exp{border-radius:var(--r);padding:.875rem 1rem;margin-top:.75rem;font-size:13px;line-height:1.65;display:none;border:0.5px solid}
+.exp.show{display:block}
+.exp.pass{background:var(--grn-bg);color:var(--grn);border-color:var(--grn-b)}
+.exp.fail{background:var(--red-bg);color:var(--red);border-color:var(--red-b)}
+.qnv{display:flex;justify-content:flex-end;margin-top:1rem}
+.scw{text-align:center;margin:1.5rem 0}
+.scb{font-size:56px;font-weight:600;color:var(--text);letter-spacing:-.04em;font-family:'DM Mono',monospace}
+.scs{font-size:12px;color:var(--t3);margin-top:4px}
+.vd{border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:1rem;font-size:13px;line-height:1.65;border:0.5px solid}
+.vd.great{background:var(--grn-bg);color:var(--grn);border-color:var(--grn-b)}
+.vd.ok{background:var(--yel-bg);color:var(--yel);border-color:var(--yel-b)}
+.vd.low{background:var(--red-bg);color:var(--red);border-color:var(--red-b)}
+.vdt{font-size:13px;font-weight:600;margin-bottom:4px}
+.dr{display:flex;align-items:center;gap:10px;padding:.5rem 0;border-bottom:0.5px solid var(--bl)}
+.dr:last-child{border-bottom:none}
+.dn{font-size:12px;color:var(--t2);flex:1}
+.dbw{width:100px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.db{height:100%;border-radius:3px}
+.dp{font-size:12px;font-weight:500;color:var(--text);min-width:32px;text-align:right;font-family:'DM Mono',monospace}
+.mi{padding:.6rem 0;border-bottom:0.5px solid var(--bl);font-size:12px;color:var(--t2);line-height:1.5}
+.mi:last-child{border-bottom:none}
+.mi b{color:var(--text);font-weight:600}
+.hr2{display:flex;align-items:center;gap:8px;padding:.6rem 0;border-bottom:0.5px solid var(--bl);font-size:12px;flex-wrap:wrap}
+.hr2:last-child{border-bottom:none}
+.hd{color:var(--t3);min-width:90px;font-family:'DM Mono',monospace}
+.hn{color:var(--t2);flex:1}
+.hsc{font-weight:600;color:var(--text);min-width:36px;text-align:right;font-family:'DM Mono',monospace}
+.hbg{font-size:11px;padding:2px 8px;border-radius:6px;font-weight:500;min-width:60px;text-align:center}
+.bg-g{background:var(--grn-bg);color:var(--grn)}
+.bg-o{background:var(--yel-bg);color:var(--yel)}
+.bg-r{background:var(--red-bg);color:var(--red)}
+.asg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1rem}
+.as{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rl);padding:.875rem;text-align:center}
+.asn{font-size:22px;font-weight:600;color:var(--text);font-family:'DM Mono',monospace}
+.asl{font-size:10px;color:var(--t3);margin-top:2px;font-family:'DM Mono',monospace}
+.pr{display:grid;grid-template-columns:1fr 55px 55px 75px 80px;gap:8px;align-items:center;padding:.65rem 0;border-bottom:0.5px solid var(--bl);font-size:12px}
+.pr:last-child{border-bottom:none}
+.pr.hd2{font-size:10px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-family:'DM Mono',monospace}
+.tu{color:var(--grn)}.td{color:var(--red)}.tf{color:var(--t3)}
+.ab{font-size:11px;padding:2px 8px;border-radius:6px;font-weight:500}
+.ay{background:var(--red-bg);color:var(--red)}
+.ao{background:var(--grn-bg);color:var(--grn)}
+.aw{background:var(--yel-bg);color:var(--yel)}
+.rmt{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:1rem;font-size:12px;color:var(--t2);line-height:1.8;white-space:pre-wrap;word-break:break-word;margin-bottom:.75rem;font-family:'DM Mono',monospace}
+.cr{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem}
+.cpd{font-size:11px;color:var(--grn);display:none;font-family:'DM Mono',monospace}
+.scg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.scb2{border:0.5px solid var(--border);border-radius:var(--r);padding:.875rem}
+.sct{font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px}
+.scbd{font-size:12px;color:var(--t2);line-height:1.5}
+.emp{text-align:center;padding:2rem;color:var(--t3);font-size:13px}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="hdr"><h1>Billing Proficiency Suite</h1><p>Outpatient mental health &amp; MNT &middot; Claim validation, modifier guidance &amp; provider accountability</p></div>
+<div class="nav">
+  <button class="ntab active" onclick="SP('pv')">Claim validator</button>
+  <button class="ntab" onclick="SP('pg')">Modifier guide</button>
+  <button class="ntab" onclick="SP('pq')">Proficiency quiz</button>
+  <button class="ntab" onclick="SP('pa')">Admin dashboard</button>
+  <button class="ntab" onclick="SP('pr')">PDF report card</button>
+  <button class="ntab" onclick="SP('pm')">Reminders</button>
+</div>
+
+<!-- VALIDATOR -->
+<div id="pv" class="pg active">
+<div class="card">
+  <div class="sl">Care type &amp; payer</div>
+  <div class="fr"><div><label>Care type</label><select id="ct" onchange="uCPT()"><option value="">Select care type</option><option value="mh">Outpatient mental health counseling</option><option value="mnt">Outpatient MNT (Medical Nutrition Therapy)</option></select></div><div><label>Insurance payer</label><select id="py" onchange="cPF()"><option value="">Select payer</option><option value="medicare">Medicare</option><option value="medicaid">Medicaid</option><option value="bcbs">BCBS</option><option value="aetna">Aetna</option><option value="uhc">UnitedHealthcare</option><option value="cigna">Cigna</option><option value="humana">Humana</option><option value="magellan">Magellan Health</option><option value="optum">Optum/UBH</option></select></div></div>
+  <div class="fr3"><div><label>Plan type</label><select id="plt" onchange="cPF()"><option value="">Select plan type</option><option value="ppo">PPO</option><option value="epo">EPO</option><option value="pos">POS</option><option value="hmo">HMO</option><option value="wc">Workers comp</option><option value="medicareadvantage">Medicare Advantage</option><option value="mco">Medicaid MCO</option><option value="tpl">Third-party liability</option></select></div><div><label>Place of service</label><select id="pos"><option value="11">11 - Office</option><option value="02">02 - Telehealth (patient home)</option><option value="10">10 - Telehealth (non-home)</option></select></div><div><label>Duration (min)</label><input type="text" id="dur" placeholder="e.g. 60"></div></div>
+  <div class="fr"><div><label>Patient age</label><input type="text" id="age" placeholder="e.g. 45" maxlength="3"></div><div><label>In-network status</label><select id="net"><option value="in">In-network</option><option value="out">Out-of-network</option><option value="unknown">Unknown</option></select></div></div>
+  <div id="hrb" class="hrb"><div class="hrt">High-risk plan type detected</div><div id="hrm" class="hrm"></div></div>
+  <div id="pab" class="pab"><div class="pat">Prior authorization likely required</div><div id="pam" class="pam"></div></div>
+</div>
+<div class="card"><div class="sl">Procedure codes (CPT)</div><div class="cir"><select id="cs" style="flex:1"><option value="">Select a CPT code</option></select><input type="text" id="cc" placeholder="Or type custom" style="flex:.6"><button class="abtn" onclick="aC()">+ Add</button></div><div id="ctags"></div></div>
+<div class="card"><div class="sl">Modifiers</div><div class="cir"><select id="ms" style="flex:1"><option value="">Select a modifier</option><option value="25">25 - Significant, separate E&amp;M</option><option value="59">59 - Distinct procedural service</option><option value="GT">GT - Via interactive audio/video</option><option value="95">95 - Synchronous telehealth</option><option value="GQ">GQ - Via asynchronous telehealth</option><option value="HO">HO - Masters level</option><option value="HN">HN - Bachelors level</option><option value="AJ">AJ - Clinical social worker</option><option value="U1">U1 - Medicaid level of care 1</option></select><button class="abtn" onclick="aM()">+ Add</button></div><div id="mtags"></div></div>
+<div class="card"><div class="sl">Diagnosis codes (ICD-10)</div><div class="cir"><select id="ds" style="flex:1"><option value="">Select a diagnosis</option></select><input type="text" id="dc" placeholder="Or type ICD-10" style="flex:.6"><button class="abtn" onclick="aD()">+ Add</button></div><div id="dtags"></div></div>
+<div class="card"><div class="sl">Provider credentials</div><div class="fr"><div><label>Provider type</label><select id="pvt"><option value="">Select provider type</option><option value="lcsw">LCSW</option><option value="lpc">LPC / LPCC</option><option value="lmft">LMFT</option><option value="psychologist">Psychologist (PhD/PsyD)</option><option value="psychiatrist">Psychiatrist (MD/DO)</option><option value="rd">RD - Registered Dietitian</option><option value="rd_cde">RD + CDE</option></select></div><div><label>NPI on file</label><select id="npi"><option value="yes">Yes</option><option value="no">No</option></select></div></div></div>
+<div class="card">
+  <div class="sl">Prior authorization confirmation</div>
+  <div style="display:flex;align-items:flex-start;gap:12px;padding:.25rem 0">
+    <input type="checkbox" id="pa-confirm" style="width:16px;height:16px;margin-top:2px;flex-shrink:0;accent-color:var(--acc);cursor:pointer">
+    <label for="pa-confirm" style="font-size:13px;color:var(--text);font-weight:400;cursor:pointer;line-height:1.6">I have verified whether prior authorization is required for this claim, and if so, have confirmed that a valid authorization is on file before submitting.</label>
+  </div>
+  <div id="pa-confirm-warn" style="display:none;margin-top:.75rem;background:var(--yel-bg);border:0.5px solid var(--yel-b);border-radius:var(--r);padding:.65rem .875rem;font-size:12px;color:var(--yel)">PA confirmation is required before validating. Check the box above to confirm you have verified prior authorization status for this claim.</div>
+</div>
+<button class="btn btn-p" style="width:100%;margin-bottom:.5rem" onclick="vC()">Validate claim</button>
+<div id="vr"></div>
+</div>
+
+<!-- MODIFIER GUIDE -->
+<div id="pg" class="pg">
+<div class="gt">
+  <button class="gtb active" onclick="sG('gw',event)">What is a modifier?</button>
+  <button class="gtb" onclick="sG('gm',event)">Mental health</button>
+  <button class="gtb" onclick="sG('gn',event)">MNT</button>
+  <button class="gtb" onclick="sG('gp',event)">Help me choose</button>
+  <button class="gtb" onclick="sG('gl',event)">Key terms</button>
+</div>
+<div id="gw" class="gs active">
+  <div class="ibox"><div class="ilbl">Start here if you are new to insurance billing</div><div class="itxt">A modifier is a two-digit code added to a procedure code (CPT) to give the insurance company extra information about how, where, or by whom a service was provided. Think of it as a note on your claim that says this was telehealth or this was a separate service from the other thing billed today.</div></div>
+  <div class="wbox"><div class="wlbl">Most common mistake</div><div class="wtxt">Many providers new to billing skip modifiers entirely or add them to every claim just in case. Both cause denials. Modifiers should only be added when the situation specifically requires one — using the wrong modifier is just as bad as missing one.</div></div>
+  <div class="mc"><div class="mh"><div><div class="mn">When do I need a modifier?</div></div></div><div class="mb">You need a modifier when at least one of these is true:<br><br><b>1. The service was via telehealth.</b> Insurance needs to know the visit was not in person.<br><br><b>2. You billed two things on the same day that look related.</b> A modifier tells the payer they were actually separate services.<br><br><b>3. Your payer requires one for your credential level.</b> Some Medicaid plans require this.<br><br><b>4. You are billing DSMT or a group service.</b></div><div class="me"><div class="mel">Real example</div><div class="met">A therapist does an intake (90791) and 53 minutes of psychotherapy (90837) in the same session. Without modifier 25 on the 90791, the payer bundles them and denies one. With modifier 25, both are reimbursed.</div></div></div>
+  <div class="mc"><div class="mh"><div><div class="mn">Where does the modifier go on the claim?</div></div></div><div class="mb">On a CMS-1500 claim form, modifiers go in Box 24D next to the CPT code they modify. Up to 4 modifiers per CPT code. In most billing software there is a modifier field next to each procedure line.</div></div>
+</div>
+<div id="gm" class="gs">
+  <div class="dl">Telehealth modifiers</div>
+  <div class="mc"><div class="mh"><div class="mcd">95</div><div><div class="mn">Synchronous telehealth — patient at home</div><div class="ms">Most common telehealth modifier for mental health</div></div></div><div class="mb">Use when you provided a live real-time video session and the patient was at home. Required by Medicare and most commercial payers.</div><div class="me"><div class="mel">When to use it</div><div class="met">53-minute therapy session over Zoom, patient at home. Bill: 90837-95. Set Place of Service to 02.</div></div><div class="mp"><span class="pill pu">Medicare</span><span class="pill pu">Most commercial</span><span class="pill pu">POS 02 or 10</span></div></div>
+  <div class="mc"><div class="mh"><div class="mcd">GT</div><div><div class="mn">Via interactive audio and video</div><div class="ms">Older telehealth modifier, still used by some payers</div></div></div><div class="mb">GT was the original telehealth modifier. Some Medicaid programs still require GT instead of 95. Check the payer manual — using the wrong one causes a denial.</div><div class="mp"><span class="pill pu">Some Medicaid plans</span><span class="pill pw">Check payer manual first</span><span class="pill pd">Do not combine with 95</span></div></div>
+  <div class="dl">Same-day service modifiers</div>
+  <div class="mc"><div class="mh"><div class="mcd">25</div><div><div class="mn">Significant, separately identifiable E&amp;M service</div><div class="ms">Required when billing an intake and therapy on the same day</div></div></div><div class="mb">Goes on an evaluation code (90791) to tell the payer the intake was separately documented from the therapy also billed that day. Without it, the payer assumes both are part of the same encounter and pays only one.<br><br>Modifier 25 goes on the evaluation code — NOT on the therapy code.</div><div class="me"><div class="mel">Correct usage</div><div class="met">New patient: full psychiatric eval (90791) then 53 min therapy (90837) same session. Bill: 90791-25 and 90837.</div></div><div class="me"><div class="mel">Common mistake</div><div class="met">Do NOT add 25 to every claim. Only use when you genuinely billed two separate service types on the same date. Overuse triggers audits.</div></div><div class="mp"><span class="pill pu">Goes on 90791 or 90792</span><span class="pill pd">Not on therapy codes</span><span class="pill pw">Only when two services same day</span></div></div>
+  <div class="mc"><div class="mh"><div class="mcd">59</div><div><div class="mn">Distinct procedural service</div><div class="ms">Only when two codes trigger a specific NCCI edit</div></div></div><div class="mb">Tells the payer two procedure codes billed on the same day were genuinely separate services. In mental health, rarely needed — most bundling issues are handled by modifier 25. Only use 59 if your clearinghouse flags a specific NCCI edit.</div><div class="mp"><span class="pill pw">Use sparingly</span><span class="pill pw">Only with NCCI conflicts</span><span class="pill pd">Requires strong documentation</span></div></div>
+  <div class="dl">Credential modifiers</div>
+  <div class="mc"><div class="mh"><div class="mcd">AJ</div><div><div class="mn">Clinical social worker rendering</div><div class="ms">Required by some Medicaid plans for LCSWs</div></div></div><div class="mb">Some state Medicaid programs require modifier AJ when the rendering provider is an LCSW. Check your specific state Medicaid provider manual.</div><div class="mp"><span class="pill pu">For LCSWs</span><span class="pill pi">Medicaid plans only</span><span class="pill pw">Verify with your state plan</span></div></div>
+  <div class="mc"><div class="mh"><div class="mcd">HO</div><div><div class="mn">Masters level clinician</div><div class="ms">Used in some Medicaid and carve-out plans</div></div></div><div class="mb">Indicates the service was provided by a masters-level clinician (LPC, LCSW, or LMFT). Some Medicaid MCOs and behavioral health carve-outs use this to set reimbursement rates correctly.</div><div class="mp"><span class="pill pu">LPC, LCSW, LMFT</span><span class="pill pi">Medicaid MCO or carve-out plans</span></div></div>
+</div>
+<div id="gn" class="gs">
+  <div class="ibox"><div class="ilbl">MNT billing note</div><div class="itxt">MNT uses fewer modifiers than mental health billing. Most important: telehealth requires a modifier, DSMT is a separate benefit that cannot be billed on the same date as MNT, and Medicare has strict annual hour limits.</div></div>
+  <div class="dl">Telehealth modifiers</div>
+  <div class="mc"><div class="mh"><div class="mcd">95</div><div><div class="mn">Synchronous telehealth</div><div class="ms">Standard telehealth modifier for MNT</div></div></div><div class="mb">Use when you provide MNT via live video with the patient at home. Pair with Place of Service 02.</div><div class="me"><div class="mel">Example</div><div class="met">30-minute MNT reassessment over video. Patient at home. Bill: 97803 x2 units, modifier 95, POS 02.</div></div><div class="mp"><span class="pill pu">Medicare</span><span class="pill pu">Commercial payers</span><span class="pill pu">POS 02</span></div></div>
+  <div class="dl">Critical MNT notes</div>
+  <div class="mc"><div class="mh"><div><div class="mn">MNT is billed in 15-minute units</div></div></div><div class="mb">97802 and 97803 are billed per 15-minute increment. A 60-minute MNT session = 4 units. Report the number of units in the units field on your claim — not by billing the code multiple times.</div><div class="me"><div class="mel">Example</div><div class="met">60-minute initial MNT: Bill 97802, 4 units. 30-minute follow-up: Bill 97803, 2 units.</div></div></div>
+  <div class="mc"><div class="mh"><div><div class="mn">MNT and DSMT are separate Medicare benefits</div></div></div><div class="mb">MNT (97802, 97803) and Diabetes Self-Management Training (G0108, G0109) are two different benefits with different annual hour limits. You cannot bill both on the same date — they will be bundled and one will be denied. DSMT requires CMS-accredited program status and a CDCES credential.</div><div class="mp"><span class="pill pd">Never bill MNT + DSMT same day</span><span class="pill pw">DSMT requires CMS accreditation</span></div></div>
+</div>
+<div id="gp" class="gs">
+  <div class="ibox"><div class="ilbl">How to use this tool</div><div class="itxt">Answer the questions below and we will tell you which modifier(s) to use. Start fresh for each claim.</div></div>
+  <div class="tc" id="pq1"><div class="tq">Step 1 — Was this session conducted via telehealth (video or phone)?</div><div class="tos"><div class="to" onclick="pick('telehealth','yes',event)"><div class="tol">Yes — the patient was not in my office</div></div><div class="to" onclick="pick('telehealth','no',event)"><div class="tol">No — it was an in-person visit</div></div></div><div id="pr1"></div></div>
+  <div class="tc" id="pq2" style="display:none"><div class="tq">Step 2 — Did you bill more than one CPT code for this patient today?</div><div class="tos"><div class="to" onclick="pick('multicode','yes',event)"><div class="tol">Yes — I billed two or more codes today</div></div><div class="to" onclick="pick('multicode','no',event)"><div class="tol">No — just one code</div></div></div><div id="pr2"></div></div>
+  <div class="tc" id="pq3" style="display:none"><div class="tq">Step 3 — Is one of those codes an intake or evaluation (90791 or 90792)?</div><div class="tos"><div class="to" onclick="pick('intake','yes',event)"><div class="tol">Yes — I billed 90791 or 90792 along with therapy</div></div><div class="to" onclick="pick('intake','no',event)"><div class="tol">No — both codes are therapy or other services</div></div></div><div id="pr3"></div></div>
+  <div class="tc" id="pq4" style="display:none"><div class="tq">Step 4 — Does your payer or plan require a credential modifier (e.g., Medicaid MCO or Magellan carve-out)?</div><div class="tos"><div class="to" onclick="pick('cred','yes',event)"><div class="tol">Yes — my plan requires AJ, HO, or HN</div></div><div class="to" onclick="pick('cred','no',event)"><div class="tol">No — standard Medicare or commercial PPO</div></div><div class="to" onclick="pick('cred','unsure',event)"><div class="tol">I am not sure</div></div></div><div id="pr4"></div></div>
+  <div id="pfin" style="display:none"><div id="pfbox" class="tr2"><div class="trt">Your modifier summary</div><div class="trb" id="pfbody"></div></div><button class="rst" onclick="rP()">Start over</button></div>
+</div>
+<div id="gl" class="gs">
+  <div class="mc">
+    <div class="gr"><div class="gt2">CPT code</div><div class="gd">Current Procedural Terminology — the 5-digit numbers (like 90837) that describe what service you provided. You choose the CPT based on the type and length of your session.</div></div>
+    <div class="gr"><div class="gt2">ICD-10 code</div><div class="gd">The diagnosis code (like F41.1 for GAD). Insurance uses this to confirm the service was medically necessary for the patient's condition.</div></div>
+    <div class="gr"><div class="gt2">Modifier</div><div class="gd">A 2-digit code added to a CPT to provide extra context — like whether the service was via telehealth or was separate from another code billed that day.</div></div>
+    <div class="gr"><div class="gt2">Place of service</div><div class="gd">A 2-digit code telling the payer where the service occurred. 11 = office, 02 = telehealth at patient home, 10 = telehealth non-home location.</div></div>
+    <div class="gr"><div class="gt2">Medical necessity</div><div class="gd">The clinical justification for a service. Insurance will deny claims if documentation does not clearly show why the patient needed the service at the frequency and duration provided.</div></div>
+    <div class="gr"><div class="gt2">NCCI edit</div><div class="gd">National Correct Coding Initiative — a CMS policy that prevents billing two codes together when one is considered part of the other.</div></div>
+    <div class="gr"><div class="gt2">Prior auth (PA)</div><div class="gd">Permission from insurance before you provide a service. If required and skipped, the claim will be denied regardless of clinical appropriateness.</div></div>
+    <div class="gr"><div class="gt2">Bundling</div><div class="gd">When a payer pays only one code instead of two because they consider both part of the same service. Modifiers 25 and 59 can override bundling when services were truly separate.</div></div>
+    <div class="gr"><div class="gt2">Carve-out</div><div class="gd">When behavioral health benefits are managed by a separate company from the main medical plan. You must be enrolled with both.</div></div>
+    <div class="gr"><div class="gt2">CMS-1500</div><div class="gd">The standard claim form. CPT in Box 24D, ICD-10 in Box 21, modifiers in Box 24D next to the CPT, units in Box 24G.</div></div>
+    <div class="gr"><div class="gt2">NPI</div><div class="gd">National Provider Identifier — a unique 10-digit number assigned to every provider. Must be enrolled with each payer before billing.</div></div>
+    <div class="gr"><div class="gt2">Superbill</div><div class="gd">An itemized receipt with CPT codes, ICD-10 codes, provider NPI, and session date that out-of-network patients use to seek reimbursement from their insurer.</div></div>
+  </div>
+</div>
+</div>
+
+<!-- QUIZ -->
+<div id="pq" class="pg">
+<div id="qs1" class="qs active">
+  <div class="ibox"><div class="ilbl">Biweekly proficiency check</div><div class="itxt">10 scenario-based questions. About 5 minutes. Complete every two weeks to catch gaps before they become claim denials.</div></div>
+  <div class="card"><div class="sl">Before you begin</div><div class="fr"><div><label>Your name</label><input type="text" id="pname" placeholder="e.g. Jamie Chen"></div><div><label>Care type</label><select id="qtype"><option value="mh">Mental health</option><option value="mnt">MNT / Dietitian</option><option value="both">Both</option></select></div></div><div><label>Quiz set</label><select id="qset"><option value="A">Set A - Foundations</option><option value="B">Set B - Intermediate</option><option value="C">Set C - Payer-specific</option></select></div></div>
+  <div style="display:flex;justify-content:space-between;align-items:center"><button class="btn btn-s" onclick="sQS('qs4')">View past results</button><button class="btn btn-p" onclick="sQ()">Begin quiz</button></div>
+</div>
+<div id="qs2" class="qs">
+  <div class="pw2"><div class="pm"><span id="ql">Question 1 of 10</span><span id="qd"></span></div><div class="pb"><div class="pf" id="qpf" style="width:0%"></div></div></div>
+  <div class="card"><div class="qn" id="qnum"></div><div class="qsc" id="qsc" style="display:none"></div><div class="qt" id="qtxt"></div><div id="qopts"></div><div class="exp" id="qexp"></div></div>
+  <div class="qnv"><button class="btn btn-p" id="nxt" onclick="nQ()" style="display:none">Next</button></div>
+</div>
+<div id="qs3" class="qs">
+  <div class="scw"><div class="scb" id="spct"></div><div class="scs" id="ssub"></div></div>
+  <div class="sg"><div class="sb2"><div class="sn" id="rcor"></div><div class="slb">Correct</div></div><div class="sb2"><div class="sn" id="rwrg"></div><div class="slb">Missed</div></div><div class="sb2"><div class="sn" id="rstr"></div><div class="slb">Best streak</div></div></div>
+  <div class="vd" id="vdb"><div class="vdt" id="vdt"></div><div id="vdb2"></div></div>
+  <div class="card"><div class="sl">Performance by topic</div><div id="dom"></div></div>
+  <div class="card" id="mcard" style="display:none"><div class="sl">Questions to review</div><div id="mlist"></div></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:.5rem"><button class="btn btn-s" onclick="sQS('qs1')">Back to start</button><button class="btn btn-s" onclick="sQ()">Retake</button><button class="btn btn-s btn-p" onclick="SP('pr');pRS()">Export report card</button></div>
+</div>
+<div id="qs4" class="qs">
+  <div class="card"><div class="sl">Your past results</div><div id="hlist"></div></div>
+  <button class="btn btn-s" onclick="sQS('qs1')" style="margin-top:.25rem">Back</button>
+</div>
+</div>
+
+<!-- ADMIN -->
+<div id="pa" class="pg">
+  <div class="ibox"><div class="ilbl">Admin view</div><div class="itxt">Aggregates all quiz results stored in this browser. For full team visibility, providers should use the same shared device or submit PDF report cards to you.</div></div>
+  <div class="asg"><div class="as"><div class="asn" id="at">-</div><div class="asl">Attempts</div></div><div class="as"><div class="asn" id="ap">-</div><div class="asl">Providers</div></div><div class="as"><div class="asn" id="aa">-</div><div class="asl">Team avg</div></div><div class="as"><div class="asn" id="an" style="color:var(--red)">-</div><div class="asl">Need attention</div></div></div>
+  <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem"><div class="sl" style="margin:0">Provider performance</div><button class="btn btn-s" onclick="lA()">Refresh</button></div><div class="pr hd2"><span>Provider</span><span style="text-align:right">Tries</span><span style="text-align:right">Avg</span><span style="text-align:right">Trend</span><span style="text-align:right">Status</span></div><div id="apl"><div class="emp">No quiz data yet.</div></div></div>
+  <div class="card"><div class="sl">Team-wide topic weak spots</div><div id="adom"><div style="font-size:13px;color:var(--t3)">Complete quizzes to see domain data.</div></div></div>
+  <div class="card"><div class="sl">Full attempt log</div><div id="alog"><div class="emp">No attempts yet.</div></div></div>
+</div>
+
+<!-- REPORT -->
+<div id="pr" class="pg">
+  <div class="ibox"><div class="ilbl">PDF report card</div><div class="itxt">Generate a printable report for any provider. Use your browser Print then Save as PDF (Ctrl+P or Cmd+P).</div></div>
+  <div class="card"><div class="sl">Generate report</div><div class="fr"><div><label>Select provider</label><select id="rps" onchange="uRP()"><option value="">- choose -</option></select></div><div><label>Date range</label><select id="rrng" onchange="uRP()"><option value="all">All time</option><option value="30">Last 30 days</option><option value="60">Last 60 days</option><option value="90">Last 90 days</option></select></div></div><button class="btn btn-p" onclick="pR()" style="width:100%">Print / Save as PDF</button></div>
+  <div id="rprev" style="display:none"><div class="card"><div class="sl">Preview</div><div id="rcon"></div></div></div>
+</div>
+
+<!-- REMINDERS -->
+<div id="pm" class="pg">
+  <div class="ibox"><div class="ilbl">Biweekly reminder setup</div><div class="itxt">Copy the templates below and schedule as recurring Slack messages, emails, or calendar events. Monday at 8 AM every two weeks works well.</div></div>
+  <div class="card"><div class="sl">Customize</div><div class="fr"><div><label>Practice / team name</label><input type="text" id="rmt" placeholder="e.g. Clarity Counseling" oninput="uR()"></div><div><label>Quiz URL</label><input type="text" id="rml" placeholder="e.g. yoursite.vercel.app" oninput="uR()"></div></div><div class="fr"><div><label>Supervisor name</label><input type="text" id="rma" placeholder="e.g. Dr. Rivera" oninput="uR()"></div><div><label>Submission method</label><select id="rms" onchange="uR()"><option value="screenshot">Screenshot results screen</option><option value="pdf">Export PDF report card</option><option value="honor">Honor system - no submission</option></select></div></div></div>
+  <div class="card"><div class="sl">Slack message</div><div class="rmt" id="slk"></div><div class="cr"><span class="cpd" id="sc1">Copied!</span><button class="btn btn-s" onclick="cT('slk','sc1')">Copy</button></div><div class="scg"><div class="scb2"><div class="sct">Schedule in Slack</div><div class="scbd">Type your message, click arrow next to Send, choose Schedule message, set to repeat every 2 weeks.</div></div><div class="scb2"><div class="sct">Best timing</div><div class="scbd">Monday at 8 AM, every other week. Providers complete before their first session.</div></div></div></div>
+  <div class="card"><div class="sl">Email template</div><div class="rmt" id="eml"></div><div class="cr"><span class="cpd" id="sc2">Copied!</span><button class="btn btn-s" onclick="cT('eml','sc2')">Copy</button></div><div class="scg"><div class="scb2"><div class="sct">Schedule in Gmail</div><div class="scbd">Compose, click arrow next to Send, Schedule send. For recurring use Boomerang or a calendar reminder.</div></div><div class="scb2"><div class="sct">Schedule in Outlook</div><div class="scbd">Compose, Options, Delay Delivery. For recurring set a repeating calendar event with the email body in notes.</div></div></div></div>
+  <div class="card"><div class="sl">Calendar event description</div><div class="rmt" id="cal"></div><div class="cr"><span class="cpd" id="sc3">Copied!</span><button class="btn btn-s" onclick="cT('cal','sc3')">Copy</button></div></div>
+</div>
+
+</div>
+<script>
+const MHC=[{v:"90791",l:"90791 - Psychiatric diagnostic eval"},{v:"90792",l:"90792 - Psychiatric eval with medical services"},{v:"90832",l:"90832 - Psychotherapy 16-37 min"},{v:"90834",l:"90834 - Psychotherapy 38-52 min"},{v:"90837",l:"90837 - Psychotherapy 53+ min"},{v:"90839",l:"90839 - Psychotherapy for crisis 30-74 min"},{v:"90840",l:"90840 - Psychotherapy for crisis add-on"},{v:"90845",l:"90845 - Psychoanalysis"},{v:"90846",l:"90846 - Family psychotherapy without patient"},{v:"90847",l:"90847 - Family psychotherapy with patient"},{v:"90853",l:"90853 - Group psychotherapy"},{v:"90785",l:"90785 - Interactive complexity add-on"}];
+const MNC=[{v:"97802",l:"97802 - MNT initial assessment 15 min"},{v:"97803",l:"97803 - MNT reassessment 15 min"},{v:"97804",l:"97804 - MNT group 30 min"},{v:"G0108",l:"G0108 - Diabetes self-management individual"},{v:"G0109",l:"G0109 - Diabetes self-management group"}];
+const MHD=[{v:"F32.1",l:"F32.1 - MDD moderate"},{v:"F32.2",l:"F32.2 - MDD severe"},{v:"F33.1",l:"F33.1 - MDD recurrent moderate"},{v:"F41.1",l:"F41.1 - GAD"},{v:"F41.0",l:"F41.0 - Panic disorder"},{v:"F43.10",l:"F43.10 - PTSD unspecified"},{v:"F43.11",l:"F43.11 - PTSD acute"},{v:"F43.12",l:"F43.12 - PTSD chronic"},{v:"F31.81",l:"F31.81 - Bipolar II"},{v:"F20.9",l:"F20.9 - Schizophrenia"},{v:"F90.0",l:"F90.0 - ADHD inattentive"},{v:"F84.0",l:"F84.0 - Autism spectrum disorder"},{v:"F42.2",l:"F42.2 - OCD"},{v:"F50.01",l:"F50.01 - Anorexia restricting"},{v:"F50.02",l:"F50.02 - Anorexia binge purge"}];
+const MND=[{v:"E11.9",l:"E11.9 - T2DM uncomplicated"},{v:"E10.9",l:"E10.9 - T1DM uncomplicated"},{v:"E11.65",l:"E11.65 - T2DM with hyperglycemia"},{v:"E66.01",l:"E66.01 - Morbid obesity"},{v:"E66.09",l:"E66.09 - Obesity other"},{v:"I10",l:"I10 - Hypertension"},{v:"E78.5",l:"E78.5 - Hyperlipidemia"},{v:"N18.3",l:"N18.3 - CKD stage 3"},{v:"N18.4",l:"N18.4 - CKD stage 4"},{v:"K86.89",l:"K86.89 - Other pancreatic disease"}];
+const NCCI=[{c:["90837","90832"],m:"90837 and 90832 cannot be billed together. Bill only the code matching your actual session time."},{c:["90837","90834"],m:"90837 and 90834 cannot be billed together. Bill only the code matching your documented session time."},{c:["90834","90832"],m:"90834 and 90832 cannot be billed on the same date for the same patient."},{c:["90791","90792"],m:"90791 and 90792 cannot both be billed on the same date. These are mutually exclusive intake codes."},{c:["90846","90847"],m:"90846 and 90847 cannot be billed on the same date."},{c:["97802","97803"],m:"97802 and 97803 cannot both be billed on the same date of service."},{c:["G0108","G0109"],m:"G0108 and G0109 cannot be billed on the same date for the same patient."},{c:["97802","G0108"],m:"MNT (97802) and DSMT (G0108) on the same date will be bundled by most payers."},{c:["97803","G0108"],m:"MNT reassessment (97803) and DSMT (G0108) on the same date will be bundled by most payers."}];
+const PAR={medicare:{mh:["90837 beyond session 16 in a year may require medical necessity review.","90853 group therapy requires documented rationale that group is clinically appropriate."],mnt:["MNT beyond 3 hours in year 1 or 2 hours in year 2+ requires a physician order documenting medical necessity."]},medicaid:{mh:["Most state Medicaid plans require PA for psychotherapy after 20-26 sessions per year. Verify your state limit."],mnt:["Medicaid MNT coverage and PA requirements vary widely by state. Verify with your state MCO."]},bcbs:{mh:["BCBS typically requires PA for outpatient MH after 20-30 visits depending on the plan.","BCBS requires clinical updates every 10 sessions for ongoing medical necessity."],mnt:["BCBS MNT generally follows Medicare criteria. PA may be required for non-diabetes diagnoses."]},aetna:{mh:["Aetna requires PA for outpatient MH for most commercial plans via NaviNet.","Aetna applies InterQual/MCG criteria - document functional impairment (GAF, PHQ-9) clearly."],mnt:["Aetna covers MNT for diabetes and CKD without PA in many plans. Obesity MNT typically requires PA with BMI documentation."]},uhc:{mh:["UHC/Optum requires PA for outpatient BH after session 8-10 in most commercial plans.","Optum requires an active treatment plan with measurable goals for session authorization."],mnt:["UHC covers MNT without PA for diabetes and CKD. Additional diagnoses may require medical necessity review."]},cigna:{mh:["Cigna requires PA via eviCore before session 1 for most commercial plans.","Submit treatment plan through eviCore before session 1 to avoid retroactive denial."],mnt:["Cigna MNT: PA not typically required for diabetes, but obesity-only may need prior auth."]},humana:{mh:["Humana requires PA for MH services in most HMO and some PPO plans."],mnt:["Humana covers MNT for Medicare Advantage members under CMS rules. Commercial plan PA requirements vary."]},magellan:{mh:["Magellan manages BH carve-outs for many plans. PA is typically required from session 1.","Verify your provider is enrolled with Magellan specifically, not just the base medical plan."],mnt:[]},optum:{mh:["Optum/UBH requires PA after 8-10 sessions. Submit continuing care requests before authorization expires.","Optum requires clinical updates with GAF/PHQ scores and current treatment plan goals."],mnt:["Optum MNT: PA requirements depend on the underlying plan. Always verify at time of service."]}};
+const HR={hmo:{l:"HMO",m:"HMO plans typically require a primary care referral before mental health or MNT services can be reimbursed. Verify referral is on file before the first session."},wc:{l:"Workers comp",m:"Workers compensation requires written pre-authorization for nearly all MH and nutrition services. Obtain written authorization from the claims adjuster before billing."},medicareadvantage:{l:"Medicare Advantage",m:"Medicare Advantage plans may have stricter PA requirements and narrower networks than traditional Medicare. Verify benefits, network status, and session limits before each plan year."},mco:{l:"Medicaid MCO",m:"Medicaid MCOs often have more restrictive PA thresholds than fee-for-service Medicaid. Verify authorization requirements with the specific MCO, not just the state Medicaid program."},tpl:{l:"Third-party liability",m:"Third-party liability creates coordination of benefits complexity. MH and MNT services may be denied if the payer believes the condition is not related to the liable event."}};
+const QS={A:[{domain:"Modifiers",scenario:"A patient comes in for their first appointment. You complete a full intake evaluation (90791) and then provide 53 minutes of psychotherapy (90837) in the same session.",q:"What do you need to add to the 90791 to prevent a bundling denial?",options:["Nothing - two codes on one date is always fine","Modifier 25 on the 90791","Modifier 59 on the 90837","Modifier 95 on both codes"],correct:1,explanation:"Modifier 25 goes on the evaluation code (90791) to tell the payer the intake was separately documented from the therapy. Without it, most payers bundle both into one payment. The 25 goes on the eval not the therapy code."},{domain:"CPT codes",scenario:"You provided a therapy session that lasted 45 minutes of face-to-face psychotherapy time.",q:"Which CPT code is correct?",options:["90832 - psychotherapy 16-37 min","90834 - psychotherapy 38-52 min","90837 - psychotherapy 53+ min","90791 - psychiatric diagnostic eval"],correct:1,explanation:"90834 covers 38-52 minutes. Using 90832 underbills. 90837 requires at least 53 documented minutes. The code must match documented time not scheduled time."},{domain:"Telehealth",scenario:"You conduct therapy over Zoom. The patient is at home.",q:"Which modifier and Place of Service are required?",options:["No modifier; POS 11 office","Modifier 95; POS 02 patient home","Modifier GT; POS 11 office","Modifier 25; POS 02"],correct:1,explanation:"Telehealth requires modifier 95 and POS 02 when the patient is at home. Leaving POS as 11 tells the payer to expect an in-person visit and the claim will deny."},{domain:"Diagnosis",scenario:"A provider submits psychotherapy (90837) with only diagnosis code I10 (hypertension).",q:"What will most likely happen?",options:["It will be paid - any diagnosis is acceptable","It will be paid at a reduced rate","It will be denied - MH codes require behavioral health diagnoses","It will be sent back for more information only"],correct:2,explanation:"Mental health CPT codes require a DSM-related ICD-10 (F-codes) or Z-codes. A medical diagnosis like hypertension does not support medical necessity for psychotherapy."},{domain:"Medical necessity",scenario:"A patient is doing well and symptoms are mostly resolved, but the provider continues weekly 90837 sessions without updating the treatment plan.",q:"What is the billing risk?",options:["None - if the patient wants to come, insurance will pay","The claim may be denied for lack of medical necessity","The provider should switch to 90834 to reduce scrutiny","No risk as long as diagnosis codes are correct"],correct:1,explanation:"Insurance pays for active clinical need, not maintenance or patient preference alone. If notes do not document ongoing symptoms, functional impairment, and treatment goals, payers can deny claims retroactively during audits."},{domain:"Payer rules",scenario:"A provider is credentialed with Aetna and submits outpatient therapy claims. After 12 sessions, all claims start denying.",q:"What is the most likely reason?",options:["Aetna does not cover psychotherapy","The provider forgot diagnosis codes","Aetna requires prior authorization - the provider did not obtain it","The CPT codes were incorrect"],correct:2,explanation:"Aetna requires prior authorization for outpatient MH in most commercial plans. Without PA on file, claims deny after a payer-defined session threshold. Always verify PA requirements at the start of treatment."},{domain:"Modifiers",q:"Which modifier identifies a Licensed Clinical Social Worker in a Medicaid plan requiring credential-level billing?",options:["Modifier 25","Modifier AJ","Modifier HO","Modifier 59"],correct:1,explanation:"Modifier AJ identifies the rendering provider as a Clinical Social Worker. Some Medicaid programs require this for the correct fee schedule. HO indicates masters level broadly; AJ is specifically for clinical social workers."},{domain:"NCCI",scenario:"A provider bills 90837 and 90832 on the same date for the same patient.",q:"What will happen?",options:["Both will be paid - the provider worked extra long","One code will be denied due to an NCCI bundling edit","The payer will request records before paying","The claim will be paid at a blended rate"],correct:1,explanation:"90837 and 90832 are mutually exclusive psychotherapy codes - bill only the one matching actual session time. Billing both triggers an NCCI edit and one will be automatically denied."},{domain:"High-risk plans",scenario:"A new patient presents with an HMO plan. The provider sees the patient and submits a claim.",q:"What critical step was likely missed?",options:["A different CPT code is needed for HMO patients","HMO patients require a telehealth modifier even for in-person visits","A primary care referral is typically required before HMO specialty services","Nothing - HMO claims process the same as PPO"],correct:2,explanation:"HMO plans typically require a PCP referral before specialty or behavioral health services are reimbursed. Services without a valid referral on file are a leading HMO denial cause."},{domain:"Documentation",scenario:"A provider's 90837 claim is denied for medical necessity. The note reads: Patient doing well. Continued supportive therapy. Follow up in 2 weeks.",q:"What is missing?",options:["Session duration was not documented","The note lacks functional impairment, symptoms, and treatment goals","The provider should have used 90834","A diagnosis code was not in the note"],correct:1,explanation:"Insurance requires (1) current symptoms and severity, (2) functional impairment, and (3) treatment goals and progress. Doing well and supportive therapy does not establish why weekly treatment is medically necessary. This note would not survive an audit."}],B:[{domain:"Add-on codes",scenario:"Your session involved coordinating with a guardian, interpreter, and protective services during psychotherapy.",q:"Which add-on code captures this complexity?",options:["90840 - crisis add-on","90785 - interactive complexity","90846 - family therapy without patient","No add-on exists"],correct:1,explanation:"90785 (interactive complexity) is billed alongside 90832, 90834, or 90837 when sessions involve specific complexities. It cannot be billed alone."},{domain:"Telehealth",scenario:"A Medicare patient cannot do video and requests audio-only phone sessions.",q:"How should this be handled?",options:["Same as video - modifier 95 POS 02","Audio-only is generally not a covered Medicare service for most MH CPT codes","Modifier GQ covers audio-only","Bill as in-person with POS 11"],correct:1,explanation:"Medicare generally does not cover audio-only psychotherapy as standard telehealth. Always verify current Medicare guidance before billing audio-only sessions."},{domain:"Payer rules",scenario:"After 9 UHC sessions, the provider receives a denial: authorization period has expired.",q:"What should the provider have done?",options:["Submitted a corrected claim with different CPT codes","Requested continuing authorization from Optum before session 8 or 9","Switched to a lower-intensity CPT code","Nothing - this denial cannot be prevented"],correct:1,explanation:"UHC manages BH through Optum, which authorizes sessions in blocks (often 8-10). Before the authorization period ends, providers must submit a continuing care request with updated clinical information."},{domain:"MNT coding",scenario:"An RD provides an initial 60-minute MNT session to a Type 2 diabetes patient.",q:"How should this be billed?",options:["97802 x1 unit","97803 x4 units","97802 x4 units","G0108 x1 unit"],correct:2,explanation:"97802 is the initial MNT assessment code, billed per 15-minute unit. 60 minutes = 4 units of 97802. 97803 is for reassessment visits. G0108 is DSMT, a separate Medicare benefit requiring CMS accreditation."},{domain:"NCCI",scenario:"An RD plans to bill 97802 and G0108 on the same date for a diabetic patient.",q:"What will happen?",options:["Both will be paid - they are different benefit categories","One will be denied - these codes trigger an NCCI bundling edit","Both pay only if modifier 59 is added","The claim will be approved with reduced payment"],correct:1,explanation:"Billing MNT and DSMT on the same date triggers a bundling edit. They are separate Medicare benefits and cannot be billed on the same date of service."},{domain:"High-risk plans",scenario:"A workers comp patient begins outpatient therapy without pre-authorization.",q:"What is the likely outcome?",options:["Workers comp pays like any other insurance","Claims will be denied - WC requires written pre-authorization","Only the first session needs authorization","Workers comp does not cover mental health at all"],correct:1,explanation:"Workers compensation requires written pre-authorization from the claims adjuster before the first session. Services without authorization are routinely denied and difficult to appeal."},{domain:"Diagnosis",scenario:"A patient with PTSD (F43.12) also has insomnia (G47.00). The provider lists only PTSD on the claim.",q:"Is this a problem?",options:["Yes - all diagnoses must be listed on every claim","No - listing the primary behavioral health diagnosis is generally sufficient","Yes - insomnia alone would be a better primary diagnosis","No but insomnia should be primary"],correct:1,explanation:"For outpatient MH billing, list the primary diagnosis that best supports medical necessity. Listing every associated condition is not required."},{domain:"Documentation",scenario:"A provider's notes are templated and identical across 10 consecutive sessions.",q:"What is the compliance risk?",options:["None - consistent templates show consistency of care","Clone notes are a major audit risk and may be considered fraudulent","Only a problem if the patients diagnosis changes","The payer may require longer sessions"],correct:1,explanation:"Copy-paste or clone notes are one of the top fraud indicators in payer audits and OIG reviews. Each note must reflect the actual content of that specific session."},{domain:"Modifiers",scenario:"A colleague advises adding modifier 59 to every Cigna claim to avoid bundling issues.",q:"Is this correct?",options:["Yes - 59 protects all claims from bundling","No - modifier 59 is only for specific NCCI conflicts with supporting documentation","Yes - Cigna requires 59 on all BH claims","No - Cigna requires 25 on all claims instead"],correct:1,explanation:"Modifier 59 is not blanket protection. It should only be used when a specific NCCI bundling conflict exists and documentation supports that services were distinct. Routine use triggers audits."},{domain:"Payer rules",scenario:"A BCBS patient moves to another state and asks to switch all sessions to telehealth.",q:"What must the provider verify first?",options:["Nothing - telehealth is covered in all states for all BCBS plans","Whether the provider is licensed in the patients new state AND whether that BCBS plan covers telehealth","Only whether the patient has telehealth benefits","Only whether the provider has a telehealth modifier"],correct:1,explanation:"Two issues: you must be licensed where the patient is physically located, and BCBS is a federation of independent plans so the new states plan may have different telehealth rules. Both must be verified."}],C:[{domain:"Medicare MNT",scenario:"A Medicare patient with T2DM receives 3 hours of MNT in year 1, then 2 more hours without a physician order.",q:"What happens to the additional hours?",options:["Medicare pays - 5 hours is within limits","The additional hours will be denied - Medicare covers 3 hours in year 1 without a special order","Medicare pays at a reduced rate","The extra hours need modifier 59"],correct:1,explanation:"Medicare covers 3 hours of MNT in year 1 for eligible diagnoses. Additional hours require a physician order. Without it, they are denied. Resets to 2 hours per year in subsequent years."},{domain:"Medicare MH",scenario:"An LPC attempts to enroll with Medicare to bill outpatient psychotherapy.",q:"What will happen?",options:["The LPC will be approved - all licensed MH providers qualify","Medicare will deny enrollment - LPCs are not recognized Medicare providers","The LPC can bill under a supervising psychiatrists NPI","Medicare will approve with a provisional period"],correct:1,explanation:"Medicare only covers MH services from LCSWs, psychologists, psychiatrists and other MDs/DOs, and NPs/PAs. LPCs cannot enroll. This surprises many providers transitioning from cash pay."},{domain:"Payer rules",scenario:"A patients medical card says Aetna, but behavioral health is managed by Magellan.",q:"What does this mean?",options:["Nothing - Aetna and Magellan are the same","The provider must be enrolled with Magellan specifically for BH services","Bill Aetna and Magellan will auto-process","The provider can bill either"],correct:1,explanation:"BH carve-outs mean a separate company manages MH benefits. Even if credentialed with Aetna, you must be separately enrolled with Magellan to bill BH. Submitting to Aetna for a Magellan-carved benefit will deny."},{domain:"Prior auth",scenario:"A Cigna patient begins therapy. The provider skips PA assuming the first few sessions are covered.",q:"What is the risk?",options:["None - Cigna does not require PA for MH","All sessions may be denied retroactively - Cigna routes BH PA through eviCore before session 1","Only sessions after session 6 will deny","The claim will be paid but flagged"],correct:1,explanation:"Cigna routes BH PA through eviCore and requires authorization before session 1. Claims without active authorization can be denied retroactively. In-network providers cannot then balance-bill the patient."},{domain:"High-risk plans",scenario:"A patient has a Humana Medicare Advantage plan. The provider assumes traditional Medicare rules apply.",q:"What could go wrong?",options:["Nothing - Medicare Advantage follows identical rules to traditional Medicare","The plan may have different PA requirements, session limits, or a narrower network","Medicare Advantage always pays more","Benefits only need to be verified once per year"],correct:1,explanation:"Medicare Advantage plans can add restrictions beyond CMS minimums. Humana MA may require PA where traditional Medicare does not, and may have a narrower network or different telehealth rules."},{domain:"Documentation",scenario:"A payer audits 20 sessions. Notes are thorough but there are no signed consent forms, no treatment plan, and no documented goals.",q:"What is the likely outcome?",options:["Claims upheld - session notes are what matter","The payer may recoup payment for all 20 sessions","Only claims without session notes will be recouped","Provider receives a warning but keeps payment"],correct:1,explanation:"Payers require a complete clinical record: signed consent, treatment plan with measurable goals, and progress notes documenting movement toward goals. Missing any can result in full recoupment."},{domain:"Modifiers",scenario:"A Medicaid MCO requires credential-level modifiers. The rendering provider is an LMFT.",q:"Which modifier should be used?",options:["AJ - clinical social worker","HO - masters level clinician","HN - bachelors level","No modifier needed"],correct:1,explanation:"HO indicates a masters level clinician applicable to LMFTs, LPCs, and LCSWs when plans require credential modifiers. AJ is specific to clinical social workers. HN is for bachelors level."},{domain:"NCCI",scenario:"A therapist bills 90791 (intake with patient) and 90846 (family session without patient) on the same date as separate encounters.",q:"Is this billing correct?",options:["Yes - they are distinct services to different participants","No - 90791 and 90846 can never be billed same day","Yes but modifier 59 may be required on 90846","No - 90847 should have been used"],correct:0,explanation:"Two genuinely distinct services to different participants on the same date is defensible if both are separately documented. Modifier 59 on 90846 may be required to prevent an NCCI edit."},{domain:"MNT",scenario:"A diabetic patient with morbid obesity will receive both MNT and DSMT in the same calendar year.",q:"What is the correct approach?",options:["Bill both MNT and DSMT in the same sessions","MNT and DSMT can both be used in a year but not on the same date - plan sessions accordingly","DSMT cancels MNT benefits once started","Only bill DSMT - MNT is redundant"],correct:1,explanation:"MNT and DSMT are separate Medicare benefits with separate hour limits. Both can be used in the same year but never on the same date. Your DSMT program must be CMS-accredited."},{domain:"Payer rules",scenario:"An OON therapist collects full payment upfront and does not submit a claim. The patient asks for documentation to submit to insurance.",q:"What is the providers obligation?",options:["None - if the patient paid no further obligation","The provider must supply a superbill so the patient can submit to insurance","The provider must submit the claim directly","The provider should refund and bill insurance instead"],correct:1,explanation:"Even as an OON provider collecting directly, you are obligated to provide a superbill (CPT codes, ICD-10, provider NPI, session date) if the patient requests one. Refusing is out of step with standard practice."}]};
+
+let cL=[],mL=[],dL=[],claims=[],currentQ=0,answers=[],quizQs=[],pName='',qSL='',lastR=null,history=[],pPicks={};
+try{history=JSON.parse(localStorage.getItem('bps4')||'[]')}catch(e){}
+function sH(){try{localStorage.setItem('bps4',JSON.stringify(history));}catch(e){}}
+
+function SP(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  const m={'pv':0,'pg':1,'pq':2,'pa':3,'pr':4,'pm':5};
+  document.querySelectorAll('.ntab')[m[id]].classList.add('active');
+  if(id==='pa')lA();
+  if(id==='pm')uR();
+  if(id==='pr')pRS();
+}
+function sG(id,e){
+  document.querySelectorAll('.gs').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.gtb').forEach(t=>t.classList.remove('active'));
+  if(e)e.target.classList.add('active');
+}
+function uCPT(){
+  const ct=document.getElementById('ct').value;
+  const s=document.getElementById('cs'),ds=document.getElementById('ds');
+  s.innerHTML='<option value="">Select a CPT code</option>';
+  ds.innerHTML='<option value="">Select a diagnosis</option>';
+  cL=[];mL=[];dL=[];rT();
+  document.getElementById('vr').innerHTML='';
+  document.getElementById('pa-confirm').checked=false;
+  document.getElementById('pa-confirm-warn').style.display='none';
+  (ct==='mh'?MHC:ct==='mnt'?MNC:[]).forEach(c=>{const o=document.createElement('option');o.value=c.v;o.textContent=c.l;s.appendChild(o);});
+  (ct==='mh'?MHD:ct==='mnt'?MND:[]).forEach(c=>{const o=document.createElement('option');o.value=c.v;o.textContent=c.l;ds.appendChild(o);});
+  cPF();
+}
+function cPF(){
+  const pt=document.getElementById('plt').value;
+  const py=document.getElementById('py').value;
+  const ct=document.getElementById('ct').value;
+  const hb=document.getElementById('hrb'),pb=document.getElementById('pab');
+  if(pt&&HR[pt]){document.getElementById('hrm').textContent=HR[pt].m;hb.classList.add('show');}else hb.classList.remove('show');
+  if(py&&ct&&PAR[py]&&PAR[py][ct]&&PAR[py][ct].length){document.getElementById('pam').innerHTML=PAR[py][ct].map(r=>'<div style="margin-bottom:3px">'+r+'</div>').join('');pb.classList.add('show');}else pb.classList.remove('show');
+}
+function aC(){const s=document.getElementById('cs'),c=document.getElementById('cc');const v=(c.value.trim()||s.value||'').toUpperCase();if(!v)return;if(!cL.includes(v)){cL.push(v);rT();}s.value='';c.value='';}
+function aM(){const s=document.getElementById('ms');const v=s.value;if(!v)return;if(!mL.includes(v)){mL.push(v);rT();}s.value='';}
+function aD(){const s=document.getElementById('ds'),c=document.getElementById('dc');const v=(c.value.trim()||s.value||'').toUpperCase();if(!v)return;if(!dL.includes(v)){dL.push(v);rT();}s.value='';c.value='';}
+function rC(arr,val){const i=arr.indexOf(val);if(i>-1)arr.splice(i,1);rT();}
+function rT(){
+  document.getElementById('ctags').innerHTML=cL.map(v=>`<span class="ctag">${v}<button onclick="rC(cL,'${v}')">x</button></span>`).join('');
+  document.getElementById('mtags').innerHTML=mL.map(v=>`<span class="ctag">${v}<button onclick="rC(mL,'${v}')">x</button></span>`).join('');
+  document.getElementById('dtags').innerHTML=dL.map(v=>`<span class="ctag">${v}<button onclick="rC(dL,'${v}')">x</button></span>`).join('');
+}
+function vC(){
+  const paOk=document.getElementById('pa-confirm').checked;
+  const paWarn=document.getElementById('pa-confirm-warn');
+  if(!paOk){paWarn.style.display='block';document.getElementById('pa-confirm').focus();return;}
+  paWarn.style.display='none';
+  const ct=document.getElementById('ct').value;
+  const py=document.getElementById('py').value;
+  const pt=document.getElementById('plt').value;
+  const pos=document.getElementById('pos').value;
+  const dur=parseInt(document.getElementById('dur').value)||null;
+  const pvt=document.getElementById('pvt').value;
+  const npi=document.getElementById('npi').value;
+  const net=document.getElementById('net').value;
+  const R=[];
+  if(!ct){R.push({t:'fail',ti:'Care type required',m:'Select a care type before validating.'});sVR(R,ct,py,pt);return;}
+  if(!py)R.push({t:'warn',ti:'No payer selected',m:'Payer-specific rules cannot be applied. Select a payer for a complete check.'});
+  if(!cL.length)R.push({t:'fail',ti:'No CPT codes entered',m:'At least one procedure code is required.'});
+  if(!dL.length)R.push({t:'fail',ti:'No diagnosis codes entered',m:'At least one ICD-10 diagnosis is required to support medical necessity.'});
+  if(npi==='no')R.push({t:'fail',ti:'NPI not on file',m:'A valid NPI is required for claim submission.'});
+  if(net==='out')R.push({t:'warn',ti:'Out-of-network provider',m:'Out-of-network claims are at elevated denial risk. Verify the patient has OON benefits.'});
+  if(pt&&HR[pt])R.push({t:'fail',tg:'hr',ti:'High-risk plan: '+HR[pt].l,m:HR[pt].m});
+  NCCI.forEach(b=>{if(b.c.every(x=>cL.includes(x)))R.push({t:'ncci',tg:'n',ti:'NCCI conflict: '+b.c.join(' + '),m:b.m});});
+  if(py&&ct&&PAR[py]&&PAR[py][ct])PAR[py][ct].forEach(r=>R.push({t:'pa',tg:'p',ti:'PA alert: '+py.toUpperCase(),m:r}));
+  if(pt==='hmo')R.push({t:'pa',tg:'p',ti:'PA alert: HMO referral',m:'HMO plans require a valid PCP referral on file before services are rendered. Confirm referral number is attached to the claim.'});
+  if(pt==='wc')R.push({t:'pa',tg:'p',ti:'PA alert: Workers comp',m:'Workers comp requires pre-authorization for nearly all MH and nutrition services. Obtain written authorization from the claims adjuster before billing.'});
+  if(ct==='mh'){
+    const mhC=['90791','90792','90832','90834','90837','90839','90840','90845','90846','90847','90853','90785'];
+    const vC2=cL.filter(c=>mhC.includes(c));
+    const iC=cL.filter(c=>!mhC.includes(c));
+    if(iC.length)R.push({t:'warn',ti:'Unrecognized CPT: '+iC.join(', '),m:'Verify these codes are valid for outpatient mental health.'});
+    if(cL.includes('90785')&&!cL.some(c=>['90832','90834','90837'].includes(c)))R.push({t:'fail',ti:'90785 requires a base psychotherapy code',m:'Interactive complexity (90785) must be billed with 90832, 90834, or 90837.'});
+    if(cL.includes('90840')&&!cL.includes('90839'))R.push({t:'fail',ti:'90840 requires 90839',m:'Crisis add-on (90840) must be billed alongside 90839.'});
+    if(cL.includes('90832')&&dur&&dur>37)R.push({t:'warn',ti:'Duration mismatch: 90832',m:'90832 is for sessions 16-37 min. Your duration exceeds this range.'});
+    if(cL.includes('90834')&&dur&&(dur<38||dur>52))R.push({t:'warn',ti:'Duration mismatch: 90834',m:'90834 requires 38-52 min. Verify session time.'});
+    if(cL.includes('90837')&&dur&&dur<53)R.push({t:'warn',ti:'Duration mismatch: 90837',m:'90837 requires 53+ min. Your duration may be too short.'});
+    if((cL.includes('90791')||cL.includes('90792'))&&cL.some(c=>['90832','90834','90837'].includes(c))&&!mL.includes('25'))R.push({t:'fail',ti:'Missing modifier 25 for same-day eval + therapy',m:'Billing an intake (90791/90792) and psychotherapy on the same date requires modifier 25 on the evaluation code.'});
+    const pfx=['F','Z55','Z56','Z57','Z59','Z60','Z61','Z62','Z63','Z64','Z65'];
+    const vD=dL.filter(d=>pfx.some(p=>d.startsWith(p)));
+    const iD=dL.filter(d=>!pfx.some(p=>d.startsWith(p)));
+    if(iD.length)R.push({t:'fail',ti:'Non-behavioral diagnosis: '+iD.join(', '),m:'MH CPT codes require DSM-linked ICD-10 codes (F-codes or Z social determinants). Medical diagnoses alone will be denied.'});
+    if(vD.length)R.push({t:'pass',ti:'Diagnoses support mental health billing',m:vD.join(', ')+' are valid behavioral health diagnoses.'});
+    if(pvt&&!['lcsw','lpc','lmft','psychologist','psychiatrist'].includes(pvt))R.push({t:'fail',ti:'Provider not eligible for MH billing',m:'MH CPT codes require LCSW, LPC, LMFT, Psychologist, or Psychiatrist. RDs cannot bill these codes.'});
+    if(py==='medicare'&&pvt==='lpc')R.push({t:'fail',ti:'Medicare does not recognize LPCs',m:'LPCs are not enrolled Medicare providers. Only LCSWs, psychologists, and MDs/DOs qualify.'});
+    if(py==='aetna')R.push({t:'warn',ti:'Aetna: functional impairment documentation required',m:'Aetna applies InterQual/MCG criteria. Document functional impairment scores (GAF, PHQ-9) in every note.'});
+    if(py==='uhc'||py==='optum')R.push({t:'warn',ti:'UHC/Optum: treatment plan upload required',m:'Optum requires an active treatment plan with measurable goals for session authorization. Keep it current in NaviNet.'});
+    if(py==='cigna')R.push({t:'warn',ti:'Cigna: eviCore manages BH authorizations',m:'Submit treatment plan through eviCore before session 1 to avoid retroactive denial.'});
+    if(py==='magellan')R.push({t:'warn',ti:'Magellan: verify enrollment separately',m:'Magellan manages BH carve-outs. Verify your provider is enrolled with Magellan specifically, not just the base medical plan.'});
+    if((pos==='02'||pos==='10')&&!mL.some(m=>['GT','95'].includes(m)))R.push({t:'fail',ti:'Telehealth modifier missing',m:'Telehealth POS (02 or 10) requires modifier GT or 95.'});
+    if(vC2.length)R.push({t:'pass',ti:'CPT codes valid for mental health',m:vC2.join(', ')+' are recognized outpatient MH procedure codes.'});
+  } else if(ct==='mnt'){
+    const mntC=['97802','97803','97804','G0108','G0109'];
+    const vC2=cL.filter(c=>mntC.includes(c));
+    const mntP=['E10','E11','E13','E66','I10','I11','I12','I13','E78','N18','K86','Z87'];
+    const vD=dL.filter(d=>mntP.some(p=>d.startsWith(p)));
+    const iD=dL.filter(d=>!mntP.some(p=>d.startsWith(p)));
+    if(iD.length)R.push({t:'warn',ti:'Diagnosis may not support MNT: '+iD.join(', '),m:'MNT is typically covered for diabetes, CKD, obesity, hypertension, and hyperlipidemia. Verify payer LCD.'});
+    if(vD.length)R.push({t:'pass',ti:'Diagnoses support MNT coverage',m:vD.join(', ')+' are common covered MNT indications.'});
+    if(py==='medicare'){const md=['E10','E11','E13','N18'];const cD=dL.filter(d=>md.some(p=>d.startsWith(p)));if(!cD.length)R.push({t:'fail',ti:'Medicare MNT: diagnosis may not qualify',m:'Medicare covers MNT only for diabetes (T1/T2) and non-dialysis CKD (stages 3-5).'});else R.push({t:'pass',ti:'Medicare MNT: eligible diagnosis detected',m:'Covered Medicare MNT diagnosis present. Ensure a physician referral is on file.'});}
+    if((cL.includes('G0108')||cL.includes('G0109'))&&!dL.some(d=>d.startsWith('E10')||d.startsWith('E11')||d.startsWith('E13')))R.push({t:'fail',ti:'G0108/G0109 require diabetes diagnosis',m:'DSMT codes require a diabetes ICD-10 (E10.x, E11.x, E13.x).'});
+    if(pvt&&!['rd','rd_cde'].includes(pvt))R.push({t:'fail',ti:'Provider not eligible for MNT billing',m:'MNT CPT codes require a Registered Dietitian (RD/RDN). Other provider types will be denied.'});
+    if(pvt==='rd'||pvt==='rd_cde')R.push({t:'pass',ti:'Provider type eligible for MNT',m:'RD/RDN is the required provider type for outpatient MNT billing.'});
+    if((pos==='02'||pos==='10')&&!mL.some(m=>['GT','95'].includes(m)))R.push({t:'fail',ti:'Telehealth modifier missing',m:'Telehealth POS (02 or 10) requires modifier GT or 95.'});
+    if(vC2.length)R.push({t:'pass',ti:'CPT codes valid for MNT',m:vC2.join(', ')+' are recognized MNT procedure codes.'});
+  }
+  if(!R.filter(r=>r.t==='fail'||r.t==='ncci').length&&cL.length&&dL.length)
+    R.unshift({t:'pass',ti:'No critical errors detected',m:'Claim looks ready to submit. Review any warnings and PA alerts before sending.'});
+  sVR(R,ct,py,pt);
+}
+function sVR(R,ct,py,pt){
+  const f=R.filter(r=>r.t==='fail'||r.t==='ncci').length;
+  const w=R.filter(r=>r.t==='warn'||r.t==='pa').length;
+  const p=R.filter(r=>r.t==='pass').length;
+  const tot=f+w+p||1;
+  const sc=Math.round((p/tot)*100);
+  const fc=f?'var(--red)':w?'var(--yel)':'var(--grn)';
+  let h=`<div class="sbw"><div class="sbm"><span>Approval readiness</span><span>${sc}%</span></div><div class="sb"><div class="sf" style="width:${sc}%;background:${fc}"></div></div></div>`;
+  const ord=['ncci','fail','pa','warn','pass'];
+  [...R].sort((a,b)=>ord.indexOf(a.t)-ord.indexOf(b.t)).forEach(r=>{
+    const tag=r.tg==='n'?'<span class="rtag rtag-n">NCCI</span>':r.tg==='p'?'<span class="rtag rtag-p">PA required</span>':r.tg==='hr'?'<span class="rtag rtag-h">High risk</span>':'';
+    const ic=r.t==='pass'?'+ ':(r.t==='fail'||r.t==='ncci')?'x ':'! ';
+    h+=`<div class="rc ${r.t}"><div class="rtit">${ic}${r.ti}${tag}</div><div class="rmsg">${r.m}</div></div>`;
+  });
+  document.getElementById('vr').innerHTML=h;
+}
+
+function pick(q,a,e){
+  pPicks[q]=a;
+  const qm={telehealth:'pq1',multicode:'pq2',intake:'pq3',cred:'pq4'};
+  document.querySelectorAll('#'+qm[q]+' .to').forEach(o=>o.classList.remove('sel'));
+  e.currentTarget.classList.add('sel');
+  if(q==='telehealth'){
+    document.getElementById('pr1').innerHTML=a==='yes'?'<div class="tr2"><div class="trt">Add modifier 95 (or GT for some Medicaid)</div><div class="trb">Most payers want modifier 95. Set Place of Service to 02 if patient is at home, or 10 for non-home telehealth. If your payer is a state Medicaid program, check their manual - some still require GT instead of 95.</div></div>':'<div class="trn">No telehealth modifier needed. Move on to step 2.</div>';
+    document.getElementById('pq2').style.display='block';
+  }
+  if(q==='multicode'){
+    if(a==='no'){document.getElementById('pr2').innerHTML='<div class="trn">Only one code - no bundling modifiers needed. Move to step 4 to check credential requirements.</div>';document.getElementById('pq3').style.display='none';document.getElementById('pq4').style.display='block';}
+    else{document.getElementById('pr2').innerHTML='<div class="trn">Two or more codes billed today - check step 3 for bundling rules.</div>';document.getElementById('pq3').style.display='block';}
+  }
+  if(q==='intake'){
+    document.getElementById('pr3').innerHTML=a==='yes'?'<div class="tr2"><div class="trt">Add modifier 25 to the intake/eval code</div><div class="trb">Put modifier 25 on 90791 or 90792 - not on the therapy code. Your notes must separately document both services.</div></div>':'<div class="trn">No modifier 25 needed. If you are getting a bundling denial for other code pairs, contact your billing team - modifier 59 may apply but requires review.</div>';
+    document.getElementById('pq4').style.display='block';
+  }
+  if(q==='cred'){
+    const mods=[];
+    if(pPicks.telehealth==='yes')mods.push('95 (or GT if Medicaid requires it)');
+    if(pPicks.intake==='yes')mods.push('25 on the eval code');
+    if(a==='yes')mods.push('AJ (LCSW), HO (masters level), or HN (bachelors level) - whichever applies');
+    let ex=a==='unsure'?'<br><br>To find out: call the provider services line on the back of the patients insurance card and ask if this plan requires a credential modifier for outpatient behavioral health claims.':'';
+    document.getElementById('pfin').style.display='block';
+    const box=document.getElementById('pfbox');
+    const body=document.getElementById('pfbody');
+    if(!mods.length){box.className='trn';body.innerHTML='Based on your answers, no modifiers are needed for this claim. Submit with just the CPT code, ICD-10, Place of Service, and provider NPI.'+ex;}
+    else{box.className='tr2';body.innerHTML='Add the following to your claim:<br><br><b>'+mods.join('<br>')+'</b>'+ex+'<br><br>Always verify against the specific payer manual before submitting.';}
+  }
+}
+function rP(){
+  ['pr1','pr2','pr3','pr4'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='';});
+  document.querySelectorAll('.to').forEach(o=>o.classList.remove('sel'));
+  ['pq2','pq3','pq4'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('pfin').style.display='none';
+  Object.keys(pPicks).forEach(k=>delete pPicks[k]);
+}
+function sQS(id){
+  document.querySelectorAll('.qs').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='qs4')rH();
+}
+function sQ(){
+  pName=document.getElementById('pname').value.trim()||'Provider';
+  qSL=document.getElementById('qset').value;
+  quizQs=[...QS[qSL]];
+  currentQ=0;answers=[];
+  sQS('qs2');rQ();
+}
+function rQ(){
+  const q=quizQs[currentQ];
+  document.getElementById('ql').textContent='Question '+(currentQ+1)+' of '+quizQs.length;
+  document.getElementById('qd').textContent=q.domain;
+  document.getElementById('qnum').textContent='Question '+(currentQ+1);
+  document.getElementById('qpf').style.width=Math.round((currentQ/quizQs.length)*100)+'%';
+  const sc=document.getElementById('qsc');
+  if(q.scenario){sc.style.display='block';sc.textContent=q.scenario;}else sc.style.display='none';
+  document.getElementById('qtxt').textContent=q.q;
+  document.getElementById('qopts').innerHTML=q.options.map((o,i)=>`<div class="opt" id="o${i}" onclick="sA(${i})"><div class="ol">${'ABCD'[i]}</div><div class="ot">${o}</div></div>`).join('');
+  const exp=document.getElementById('qexp');exp.className='exp';exp.textContent='';
+  document.getElementById('nxt').style.display='none';
+}
+function sA(idx){
+  const q=quizQs[currentQ];
+  if(document.getElementById('o0').classList.contains('lk'))return;
+  document.querySelectorAll('.opt').forEach(o=>o.classList.add('lk'));
+  const isR=idx===q.correct;
+  document.getElementById('o'+idx).classList.add(isR?'correct':'wrong');
+  if(!isR)document.getElementById('o'+q.correct).classList.add('rvc');
+  answers.push({isR,domain:q.domain,qText:q.q});
+  const exp=document.getElementById('qexp');
+  exp.className='exp show '+(isR?'pass':'fail');
+  exp.textContent=(isR?'Correct. ':'')+q.explanation;
+  const nb=document.getElementById('nxt');
+  nb.style.display='block';
+  nb.textContent=currentQ===quizQs.length-1?'See results':'Next';
+}
+function nQ(){currentQ++;if(currentQ>=quizQs.length){bR();return;}rQ();}
+function bR(){
+  const cor=answers.filter(a=>a.isR).length;
+  const tot=answers.length;
+  const pct=Math.round((cor/tot)*100);
+  let best=0,cur=0;
+  answers.forEach(a=>{if(a.isR){cur++;best=Math.max(best,cur);}else cur=0;});
+  const doms={};
+  answers.forEach(a=>{if(!doms[a.domain])doms[a.domain]={r:0,t:0};doms[a.domain].t++;if(a.isR)doms[a.domain].r++;});
+  const missed=answers.filter(a=>!a.isR);
+  const entry={date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),ts:Date.now(),name:pName,set:'Set '+qSL,score:pct,correct:cor,total:tot,domains:doms,missed:missed.map(m=>m.domain)};
+  history.unshift(entry);if(history.length>50)history=history.slice(0,50);sH();lastR=entry;
+  sQS('qs3');
+  document.getElementById('spct').textContent=pct+'%';
+  document.getElementById('ssub').textContent=pName+' - Set '+qSL+' - '+entry.date;
+  document.getElementById('rcor').textContent=cor;
+  document.getElementById('rwrg').textContent=tot-cor;
+  document.getElementById('rstr').textContent=best;
+  const vb=document.getElementById('vdb'),vt=document.getElementById('vdt'),vy=document.getElementById('vdb2');
+  if(pct>=90){vb.className='vd great';vt.textContent='Strong performance';vy.textContent='Solid command of billing fundamentals. Keep completing this check every two weeks - consistency at this level prevents audit risk.';}
+  else if(pct>=70){vb.className='vd ok';vt.textContent='On track - targeted review needed';vy.textContent='Working knowledge of the basics but missed some important details. Review flagged topics before your next quiz. One wrong answer on a real claim can cascade into a denial or audit.';}
+  else{vb.className='vd low';vt.textContent='Foundational review recommended';vy.textContent='Several key billing concepts need attention before submitting insurance claims independently. Work through the modifier guide and review missed topics. Retake in one week rather than two.';}
+  document.getElementById('dom').innerHTML=Object.entries(doms).map(([d,s])=>{const dp=Math.round((s.r/s.t)*100);const c=dp>=80?'var(--grn)':dp>=50?'var(--yel)':'var(--red)';return`<div class="dr"><div class="dn">${d}</div><div class="dbw"><div class="db" style="width:${dp}%;background:${c}"></div></div><div class="dp">${dp}%</div></div>`;}).join('');
+  if(missed.length){document.getElementById('mcard').style.display='block';document.getElementById('mlist').innerHTML=missed.map(a=>`<div class="mi"><b>${a.domain}</b> - ${a.qText}</div>`).join('');}
+  else document.getElementById('mcard').style.display='none';
+}
+function rH(){
+  const el=document.getElementById('hlist');
+  const mine=history.filter(h=>!pName||h.name===pName);
+  if(!mine.length){el.innerHTML='<div class="emp">No attempts recorded yet.</div>';return;}
+  el.innerHTML=mine.map(h=>{const c=h.score>=90?'bg-g':h.score>=70?'bg-o':'bg-r';const l=h.score>=90?'Strong':h.score>=70?'On track':'Review';return`<div class="hr2"><div class="hd">${h.date}</div><div class="hn">${h.set}</div><div class="hsc">${h.score}%</div><div class="hbg ${c}">${l}</div></div>`;}).join('');
+}
+function lA(){
+  if(!history.length){['apl','adom','alog'].forEach(id=>document.getElementById(id).innerHTML='<div class="emp">No data yet.</div>');['at','ap','aa','an'].forEach(id=>document.getElementById(id).textContent='0');return;}
+  const pvs={};
+  history.forEach(h=>{if(!pvs[h.name])pvs[h.name]=[];pvs[h.name].push(h);});
+  const names=Object.keys(pvs);
+  const avg=Math.round(history.reduce((s,h)=>s+h.score,0)/history.length);
+  const atn=names.filter(n=>pvs[n].slice(0,2).some(r=>r.score<70)).length;
+  document.getElementById('at').textContent=history.length;
+  document.getElementById('ap').textContent=names.length;
+  document.getElementById('aa').textContent=avg+'%';
+  document.getElementById('an').textContent=atn;
+  document.getElementById('apl').innerHTML=names.map(name=>{
+    const arr=pvs[name];
+    const pavg=Math.round(arr.reduce((s,h)=>s+h.score,0)/arr.length);
+    const lat=arr[0].score,prv=arr.length>1?arr[1].score:null;
+    const trend=prv===null?'-':lat>prv?'+ '+(lat-prv)+'%':lat<prv?'- '+(prv-lat)+'%':'-';
+    const tc=prv===null?'tf':lat>prv?'tu':lat<prv?'td':'tf';
+    const a2=arr.slice(0,2).some(r=>r.score<70);
+    const mn=!a2&&arr.slice(0,2).some(r=>r.score<80);
+    return`<div class="pr"><span style="font-size:13px;font-weight:600">${name}</span><span style="text-align:right;color:var(--t2)">${arr.length}</span><span style="text-align:right;font-weight:600">${pavg}%</span><span style="text-align:right" class="${tc}">${trend}</span><span style="text-align:right"><span class="ab ${a2?'ay':mn?'aw':'ao'}">${a2?'Needs review':mn?'Monitor':'On track'}</span></span></div>`;
+  }).join('');
+  const dt={};history.forEach(h=>{if(h.domains)Object.entries(h.domains).forEach(([d,s])=>{if(!dt[d])dt[d]={r:0,t:0};dt[d].r+=s.r;dt[d].t+=s.t;});});
+  document.getElementById('adom').innerHTML=Object.entries(dt).sort((a,b)=>(a[1].r/a[1].t)-(b[1].r/b[1].t)).map(([d,s])=>{const dp=Math.round((s.r/s.t)*100);const c=dp>=80?'var(--grn)':dp>=50?'var(--yel)':'var(--red)';return`<div class="dr"><div class="dn">${d}</div><div class="dbw"><div class="db" style="width:${dp}%;background:${c}"></div></div><div class="dp">${dp}%</div></div>`;}).join('');
+  document.getElementById('alog').innerHTML=history.slice(0,15).map(h=>{const c=h.score>=90?'bg-g':h.score>=70?'bg-o':'bg-r';const l=h.score>=90?'Strong':h.score>=70?'On track':'Review';return`<div class="hr2"><div class="hd">${h.date}</div><div class="hn">${h.name} - ${h.set}</div><div class="hsc">${h.score}%</div><div class="hbg ${c}">${l}</div></div>`;}).join('');
+}
+function pRS(){
+  const sel=document.getElementById('rps');
+  const names=[...new Set(history.map(h=>h.name))];
+  sel.innerHTML='<option value="">- choose -</option>'+names.map(n=>`<option value="${n}">${n}</option>`).join('');
+  if(lastR)sel.value=lastR.name;
+  uRP();
+}
+function uRP(){
+  const name=document.getElementById('rps').value;
+  const range=parseInt(document.getElementById('rrng').value)||0;
+  if(!name){document.getElementById('rprev').style.display='none';return;}
+  let data=history.filter(h=>h.name===name);
+  if(range){const cut=Date.now()-range*86400000;data=data.filter(h=>h.ts&&h.ts>cut);}
+  if(!data.length){document.getElementById('rprev').style.display='none';return;}
+  document.getElementById('rprev').style.display='block';
+  const avg=Math.round(data.reduce((s,h)=>s+h.score,0)/data.length);
+  const best=Math.max(...data.map(h=>h.score));
+  const trend=data.length>1?(data[0].score>data[1].score?'Improving':data[0].score<data[1].score?'Declining':'Stable'):'N/A';
+  const lat=data[0];
+  const dt={};data.forEach(h=>{if(h.domains)Object.entries(h.domains).forEach(([d,s])=>{if(!dt[d])dt[d]={r:0,t:0};dt[d].r+=s.r;dt[d].t+=s.t;});});
+  const weak=Object.entries(dt).filter(([,s])=>Math.round((s.r/s.t)*100)<70).map(([d])=>d);
+  document.getElementById('rcon').innerHTML=`<div style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:0.5px solid var(--border)"><div style="font-size:16px;font-weight:600">${name}</div><div style="font-size:12px;color:var(--t3);margin-top:2px;font-family:'DM Mono',monospace">Billing proficiency report - ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div></div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem">${[['Attempts',data.length],['Avg score',avg+'%'],['Best',best+'%'],['Trend',trend]].map(([l,v])=>`<div style="background:var(--bg);border-radius:var(--r);padding:.75rem;text-align:center;border:0.5px solid var(--border)"><div style="font-size:18px;font-weight:600;font-family:'DM Mono',monospace">${v}</div><div style="font-size:11px;color:var(--t3);margin-top:2px;font-family:'DM Mono',monospace">${l}</div></div>`).join('')}</div><div style="margin-bottom:.75rem"><div style="font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;font-family:'DM Mono',monospace">Most recent - ${lat.date} - ${lat.score}%</div>${Object.entries(lat.domains||{}).map(([d,s])=>{const dp=Math.round((s.r/s.t)*100);const c=dp>=80?'var(--grn)':dp>=50?'var(--yel)':'var(--red)';return`<div class="dr"><div class="dn">${d}</div><div class="dbw"><div class="db" style="width:${dp}%;background:${c}"></div></div><div class="dp">${dp}%</div></div>`;}).join('')}</div>${weak.length?`<div style="background:var(--red-bg);border:0.5px solid var(--red-b);border-radius:var(--r);padding:.75rem 1rem;margin-bottom:.75rem;font-size:12px;color:var(--red)"><b>Focused review needed:</b> ${weak.join(', ')}</div>`:''}<div style="font-size:11px;color:var(--t3);margin-top:1rem;line-height:1.6;font-family:'DM Mono',monospace">Expected to complete the billing proficiency quiz every two weeks. Scores below 70% require a one-week retake cycle. Two consecutive scores below 70% should trigger a 1:1 review with the billing supervisor.</div>`;
+}
+function pR(){
+  const name=document.getElementById('rps').value;
+  if(!name){alert('Please select a provider first.');return;}
+  const content=document.getElementById('rcon').innerHTML;
+  const w=window.open('','_blank');
+  w.document.write('<!DOCTYPE html><html><head><title>Billing Report - '+name+'</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"><style>body{font-family:DM Sans,sans-serif;max-width:680px;margin:2rem auto;color:#1A1815;font-size:14px}*{box-sizing:border-box}:root{--bg:#F7F6F3;--border:#E4E1D9;--t3:#A8A59F;--r:8px;--grn:#1A7A4A;--yel:#8A6000;--red:#C0392B}.dr{display:flex;align-items:center;gap:10px;padding:.4rem 0;border-bottom:0.5px solid #EEECE8}.dr:last-child{border-bottom:none}.dn{flex:1;font-size:12px;color:#6B6760}.dbw{width:120px;height:5px;background:#F7F6F3;border-radius:3px;overflow:hidden}.db{height:100%;border-radius:3px}.dp{font-size:12px;font-weight:500;min-width:32px;text-align:right;font-family:DM Mono,monospace}@media print{body{margin:1rem}}</style></head><body>'+content+'<script>window.onload=function(){window.print();}<\/script></body></html>');
+  w.document.close();
+}
+function uR(){
+  const t=document.getElementById('rmt').value||'[Practice name]';
+  const l=document.getElementById('rml').value||'[quiz URL]';
+  const a=document.getElementById('rma').value||'[Supervisor name]';
+  const s=document.getElementById('rms').value;
+  const si=s==='screenshot'?'Screenshot your results screen and send to '+a+' by end of day.':s==='pdf'?'Export a PDF report card from the tool and send to '+a+' by end of day.':'No submission required - honor system.';
+  document.getElementById('slk').textContent='Biweekly billing quiz - '+t+'\n\nTime for your biweekly billing proficiency check. About 5 minutes.\n\nFind it here: '+l+'\n\n1. Enter your name and select your quiz set\n2. Complete all 10 questions\n3. Review your topic breakdown\n4. '+si+'\n\nQuestions? Reach out to '+a+'.';
+  document.getElementById('eml').textContent='Subject: Biweekly billing quiz - please complete by Friday\n\nHi team,\n\nThis is your biweekly reminder to complete the billing proficiency quiz for '+t+'.\n\nQuiz location: '+l+'\n\nTakes about 5 minutes. After completing it you will see a breakdown by topic showing exactly where to focus your review.\n\n'+si+'\n\nProviders scoring below 70% should retake in one week. Two consecutive scores below 70% will prompt a short 1:1 review.\n\nThank you,\n'+a;
+  document.getElementById('cal').textContent='Biweekly billing quiz - '+t+'\n\nWHAT: 10-question billing proficiency check\nWHERE: '+l+'\nTIME: About 5 minutes\n\nSTEPS:\n1. Enter your name and select your quiz set\n2. Answer all 10 questions\n3. Review your topic breakdown\n4. '+si+'\n\nThis event repeats every 2 weeks.\nContact '+a+' with questions.';
+}
+function cT(id,fid){
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{const f=document.getElementById(fid);f.style.display='inline';setTimeout(()=>f.style.display='none',2000);});
+}
+uR();
+</script>
+</body>
+</html>
